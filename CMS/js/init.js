@@ -1,0 +1,1 @@
+var JobFinderLib = new JobFinderLib({});
