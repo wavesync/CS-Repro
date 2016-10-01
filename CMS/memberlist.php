@@ -11,7 +11,6 @@ include('db/memberlib.php');
 		<font style="font-weight: 800">&nbsp;会員一覧</font>
 		
 	</h1>
-	<a href="logout.php" style="float: right;"><img src="images/global/btn_logout.gif" alt="ログアウト" border="0" id="imgLogout"></a>
 </div>
 <div id="pageTitle">会員情報 ≫一覧</div>
 

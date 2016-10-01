@@ -73,7 +73,7 @@
 		<a href="bukkenlist.php" id="menuTopLink" onmouseover="Focus(this)" onmouseout="LostFocus(this)" >
 			&nbsp;【売買物件】新規登録・登録情報検索 </a>≫
 	<font style="font-weight: 800">&nbsp;【売買物件】物件情報詳細</font></h1>
-	<a href="logout.php" style="float: right;"><img src="images/global/btn_logout.gif" alt="ログアウト" border="0" id="imgLogout"></a>
+	
 </div>
 <div id="pageTitle">
 	【売買物件】物件情報詳細
@@ -139,24 +139,17 @@
 	<tr>
 		<th colspan="2">インターネット(<span class="hissu">*</span>)</th>
 		<td>
-			<input type="radio" name="publishFlg" value="01" <?php if($bukken->publishFlg == "01"){echo 'checked';}  ?> ><span class="spanH">公開</span><br>			
+			<input type="radio" name="publishFlg" value="01" <?php if($bukken->publishFlg == "01"){echo 'checked';}  ?> ><span class="spanH">公開</span>&ensp;（			
 			<input type="checkbox" name="topFlg" value="01" <?php if($bukken->topFlg === '01') echo 'checked' ?> ></input>新着物件情報
-			&ensp;&ensp;<input type="checkbox" name="topKind" value="01" <?php if($bukken->topKind === '01') echo 'checked' ?> ></input>おすすめ物件			
-			<br>									
-			<input type="radio" name="publishFlg" value="00" <?php if($bukken->publishFlg == "00"){echo 'checked';}  ?>><span class="spanH">非公開</span>			
+			&ensp;&ensp;<input type="checkbox" name="topKind" value="01" <?php if($bukken->topKind === '01') echo 'checked' ?> ></input>おすすめ物件）			
+			&ensp;&ensp;<input type="radio" name="publishFlg" value="00" <?php if($bukken->publishFlg == "00"){echo 'checked';}  ?>><span class="spanH">非公開</span>			
 		</td>
-		<th rowspan="2">コメント</th>
-		<td rowspan="2">			
-			<textarea rows="5" name="opComment" id="txtOpComment" style="ime-mode:active" cols="38"><?php echo trim($bukken->opComment) ?></textarea> 
-		</td>
-	</tr>
-	<tr>	
-		<th colspan="2">キャッチ</th>
-		<td>
-			<input type="text" name="catch" style="ime-mode:active" maxlength="50" size="38" value="<?php echo $bukken->catch ?>" />
+		<th>キャッチ</th>
+		<td>			
+			<input type="text" name="catch" style="ime-mode:active" maxlength="50" size="38" value="<?php echo $bukken->catch ?>" /> 
 		</td>
 	</tr>
-
+	
 	<tr>
 		<th colspan="2">物件価格</th>
 		<td>
@@ -197,12 +190,8 @@
 		</td>
 	</tr>
 	<tr>
-		<th colspan="2">法令上の制限</th>
-		<td>
-			<input type="text" name="seigen" style="ime-mode:active" maxlength="50" size="40" value="<?php echo $bukken->seigen ?>" />	
-		</td>
-		<th>引渡時期</th>
-		<td>			
+		<th colspan="2">引渡時期</th>
+		<td colspan="3">			
 			<select name="jiki" id="slJiki">
 				<?php 					
 					MakeComboJiki(true, $bukken->jiki);
@@ -212,10 +201,6 @@
 			<input type="text" name="nyuKyoDay" id="txtNyuKyoDay" style="ime-mode:active" maxlength="10" size="20" value="<?php echo $bukken->nyuKyoDay ?>" />
 		</td>
 	</tr>	
-	<tr>
-		<th colspan="2">利回り</th>
-		<td colspan="3"><input type="checkbox" id="chkInterestFlg" name="interestFlg" value="01" <?php if($bukken->interestFlg === '01') echo 'checked' ?>></input></td>
-	</tr>
 <!-- 	
 </table>
 
@@ -307,7 +292,7 @@
 		<th style="width:13%" >戸数・階</th>
 		<td>
 			総戸数<input type="text" class="textright" name="souKosu" id="txtSouKosu" style="ime-mode:disabled" maxlength="3" size="5" value="<?php echo $bukken->souKosu ?>" />
-			<label id="lblSyozaikai">所在階</label><input type="text" name="syozaiKai" style="ime-mode:active" id="txtSyozaiKai" maxlength="10" size="15" value="<?php echo $bukken->syozaiKai ?>" />
+			<label id="lblSyozaikai">所在階</label><input type="text" name="room1Kai" style="ime-mode:active" id="txtRoom1Kai" maxlength="10" size="15" value="<?php echo $bukken->room1Kai ?>" />
 		</td>
 	</tr>
 	<tr>
@@ -315,8 +300,19 @@
 		<td>
 			<select name="structure" id="lstStructure" >	
 				<?php MakeComboStructure(true, $bukken->structure);?> 
-			</select>
-			<input type="text" name="structureNote" style="ime-mode:active" id="txtStructureNote" maxlength="32" size="15" value="<?php echo $bukken->structureNote ?>" />
+			</select><br>
+			<table>
+				<tr>
+					<th class="noborder">地上階層</th>
+					<td class="noborder"><input type="text" name="chijouKai" style="ime-mode:active" id="txtChijouKai" maxlength="2" size="10" value="<?php echo $bukken->chijouKai ?>" />階</td>
+					<th class="noborder">地下階層</th>
+					<td class="noborder"><input type="text" name="chikaKai" style="ime-mode:active" id="txtChikaKai" maxlength="2" size="10" value="<?php echo $bukken->chikaKai ?>" />階</td>
+				</tr>
+				<tr>
+					<th class="noborder">所在階</th>
+					<td class="noborder" colspan="3"><input type="text" name="syozaiKai" style="ime-mode:active" id="txtSyozaiKai" maxlength="2" size="10" value="<?php echo $bukken->syozaiKai ?>" />階</td>
+				</tr>
+			</table>								
 		</td>
 		
 		<th>専有面積</th>
@@ -330,10 +326,7 @@
 			<input type="text" name="roomNo" style="ime-mode:active" id="txtRoomNo" maxlength="20" size="35" value="<?php echo $bukken->roomNo ?>" />		
 		</td>
 		<th>方位・間取</th>
-		<td>
-			方位	<select name="roomHoui" id="lstRoomHoui" >	
-					<?php MakeComboHoui(true, $bukken->roomHoui);?>  
-				</select>			
+		<td>					
 			間取<select name="madori" id="lstMadori" >	
 					<?php MakeComboMadori(true, $bukken->madori);?> 
 				</select>			
@@ -367,7 +360,7 @@
 
 <!-- 管理 -->
 	<tr>
-		<th rowspan="8" id="crossRow">管<br/>理</th>
+		<th rowspan="4" id="crossRow">管<br/>理</th>
 		<th class="noImg">施工会社</th>
 		<td colspan="3">
 			<input type="text" name="sekouCompany" id="txtSekouCompany" style="ime-mode:active" maxlength="25" size="35" value="<?php echo $bukken->sekouCompany ?>" />
@@ -395,51 +388,18 @@
 			<input type="text" class="textright" name="syuzenPrice" id="txtSyuzenPrice" style="ime-mode:disabled" maxlength="7" size="15" value="<?php echo $bukken->syuzenPrice ?>" />&ensp;円／月				
 		</td>
 	</tr>
+	
 	<tr>
-		<th class="noImg">地代</th>
-		<td colspan="3">	
-			<input type="text" class="textright" name="tidaiPrice" style="ime-mode:disabled" maxlength="7" size="15" value="<?php echo $bukken->tidaiPrice ?>" />&ensp;円／月		
-		</td>		
-	</tr>
-	<tr>
-		<th class="noImg">ルーフバルコニー</th>
-		<td>	
-			<input type="text" class="textright" name="rbArea" id="txtRbArea" style="ime-mode:disabled" maxlength="8" size="15" value="<?php echo CleanNumber($bukken->rbArea) ?>" />&ensp;㎡
-			<input type="text" class="textright" name="rbPrice" id="txtRbPrice" style="ime-mode:disabled" maxlength="7" size="15" value="<?php echo $bukken->rbPrice ?>" />&ensp;円／月		
-		</td>
-		<th>専用庭</th>
+		<th class="noImg">専用庭</th>
 		<td>
-			<input type="text" class="textright" name="niwaArea" id="txtNiwaArea" style="ime-mode:disabled" maxlength="8" size="15" value="<?php echo CleanNumber($bukken->niwaArea) ?>" />&ensp;㎡
-			<input type="text" class="textright" name="niwaPrice" id="txtNiwaPrice" style="ime-mode:disabled" maxlength="7" size="15" value="<?php echo $bukken->niwaPrice ?>" />&ensp;円／月				
-		</td>
-	</tr>
-	<tr>
-		<th class="noImg">トランクルーム</th>
-		<td>	
-			<input type="text" class="textright" name="trArea" id="txtTrArea" style="ime-mode:disabled" maxlength="8" size="15" value="<?php echo CleanNumber($bukken->trArea) ?>" />&ensp;㎡
-			<input type="text" class="textright" name="trPrice" id="txtTrPrice" style="ime-mode:disabled" maxlength="7" size="15" value="<?php echo $bukken->trPrice ?>" />&ensp;円／月		
+			<input type="text" class="textright" name="niwaArea" id="txtNiwaArea" style="ime-mode:disabled" maxlength="8" size="15" value="<?php echo CleanNumber($bukken->niwaArea) ?>" />&ensp;㎡							
 		</td>
 		<th>バルコニー（テラス）面積</th>
 		<td>
 			<input type="text" class="textright" name="balArea" id="txtBalArea" style="ime-mode:disabled" maxlength="8" size="15" value="<?php echo CleanNumber($bukken->balArea) ?>" />&ensp;㎡						
 		</td>
 	</tr>
-	<tr>
-		<th class="noImg">ポーチ面積</th>
-		<td>				
-			<input type="text" class="textright" name="porArea" id="txtPorArea" style="ime-mode:disabled" maxlength="8" size="15" value="<?php echo CleanNumber($bukken->porArea) ?>" />&ensp;㎡		
-		</td>
-		<th>アルコーブ面積</th>
-		<td>
-			<input type="text" class="textright" name="alcArea" id="txtAlcArea" style="ime-mode:disabled" maxlength="8" size="15" value="<?php echo CleanNumber($bukken->alcArea) ?>" />&ensp;㎡						
-		</td>
-	</tr>
-	<tr>
-		<th class="noImg">サービスバルコニー面積</th>
-		<td colspan="3">				
-			<input type="text" class="textright" name="sbArea" id="txtSbArea" style="ime-mode:disabled" maxlength="8" size="15" value="<?php echo CleanNumber($bukken->sbArea) ?>" />&ensp;㎡	
-		</td>		
-	</tr>
+	
 <!-- 管理 -->
 
 <?php if($bukken->memberFlg == "02"){?>

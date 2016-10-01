@@ -32,12 +32,12 @@ function searchBukken($searchInfo, $flg){
 function bindBukken($bukken){
 	$columns = array('pid','objectCode','objectCodeReins','objectName','publishFlg','memberFlg','introductionFlg','topFlg','topKind',
 					 'torihiki','finishFlg','saleStopFlg','opComment','catch','sikiti','youto1','youto2','youto3','seigen','jiki','jikiMonth','nyuKyoDay',
-					 'interestFlg','registTime','limitTime','souKosu','syozaiKai','roomNo','roomHoui','madori','parkingPrice','sekouCompany','kanriCompany',
+					 'interestFlg','registTime','limitTime','souKosu','room1Kai','roomNo','roomHoui','madori','parkingPrice','sekouCompany','kanriCompany',
 			  		 'kanriKind','kanriPrice','syuzenPrice',
 					 'tidaiPrice','rbArea','rbPrice','niwaArea','niwaPrice','trArea','trPrice','balArea','porArea','alcArea','sbArea',
 					 'route1Name','station1Name','station1Walk','traffic1Note','route2Name','station2Name','station2Walk','route3Name','station3Name',
 					 'station3Walk','bus','senyuArea','price','zipCode','address','address1','address2','address3','address4','feature','objectType',
-					 'structure','structureNote','totalFloor','currentFloor','floorNote','tikuYear','parking','parkingKind','equip','genkyo','note',
+					 'structure','chijouKai','chikaKai','syozaiKai','structureNote','tikuYear','parking','parkingKind','equip','genkyo','note',
 					'gmapShowMap','gmapShowView','gmapAutoFlg','gmapLat','gmapLong','gmapMapUrl','gmapStreetUrl'
 	);
 	foreach($_POST as $key => $value){

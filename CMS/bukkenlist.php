@@ -74,7 +74,6 @@ JobFinderLib.saveCode(<?php echo json_encode($jsonCodes, JSON_UNESCAPED_UNICODE)
 		<font style="font-weight: 800">&nbsp;【売買物件】新規登録・登録情報検索</font>
 		<?php }?>
 	</h1>
-	<a href="logout.php" style="float: right;"><img src="images/global/btn_logout.gif" alt="ログアウト" border="0" id="imgLogout"></a>
 </div>
 <div id="pageTitle">
 	<?php if($isShowTableHeader){?>
