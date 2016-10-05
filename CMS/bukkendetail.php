@@ -4,7 +4,7 @@
 
 <?php 	
 
-	$bukken = getBukken();
+	$bukken = getBukken(null);
 	$error = '';
 	$action = 0;
 
@@ -570,7 +570,7 @@ function OpenStation(index)
 }
 function GetAddress(address)
 {
-	document.getElementById('txtAddress').value = address;
+	document.getElementById('txtAddress').value = address.replace(/|/g, "");
 }
 function GetStation(line, station, index)
 {

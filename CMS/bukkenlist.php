@@ -2,25 +2,13 @@
 <?php include('db/bukkenlib.php');?>
 <?php include('db/codelib.php');?>
 
-<!-- コードマスタ取得 -->
-<?php if($_SERVER["REQUEST_METHOD"] == "GET"){
-	$codes = getAllCodes();
-	$jsonCodes = array();
-	foreach ($codes as $code){
-		$jsonCodes[] = $code->as_array();
-	}
-?>
-<script language="javascript">
-JobFinderLib.saveCode(<?php echo json_encode($jsonCodes, JSON_UNESCAPED_UNICODE)?>);
-</script>
-<?php }?>
-<!-- コードマスタ取得 -->
-
 <?php
+
 	$isShowTableHeader = false;
 	$clientMst = unserialize($_SESSION['UserMst']);
 	
-	$searchInfo = getBukken();	
+	$searchInfo = getBukken(null);	
+	
 	
 	if($_SERVER["REQUEST_METHOD"] == "GET")
 	{
@@ -63,6 +51,8 @@ JobFinderLib.saveCode(<?php echo json_encode($jsonCodes, JSON_UNESCAPED_UNICODE)
 			return '';
 		}
 	}
+	
+	
 ?>
 <div id="hd2">
 	<h1>		

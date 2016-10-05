@@ -8,6 +8,7 @@ $user_check= unserialize($_SESSION['USER']);
 if(!isset($_SESSION['USER']) || !isset($user_check) || $user_check == null)
 {
 	header("Location: login.php");
+	exit;
 }
 else
 {
@@ -16,6 +17,7 @@ else
 	if($ret == false)
 	{
 		header("Location: login.php");
+		exit;
 	}	
 }
 ?>

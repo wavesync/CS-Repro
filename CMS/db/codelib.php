@@ -48,12 +48,11 @@ function getAllCodes(){
  */
 function MakeCodeMstCombo($code, $hasDefault, $val)
 {
+	$codes = getCode($code);
 	if($hasDefault == true)
 	{
 		print("<option value=\"\">未選択</option>");
-	}
-
-	$codes = getCode($code);
+	}	
 	
 	foreach($codes as $row)
 	{
@@ -72,8 +71,63 @@ function MakeCodeMstCombo($code, $hasDefault, $val)
 				print("<option value=\"".$row->number."\" selected>".$row->title."</option>");
 			}
 		}
+
 	}
 	
+}
+
+/**
+ * コンボボックス
+ * @param unknown $code
+ * @param unknown $hasDefault
+ * @param unknown $val
+ */
+function MakeCodeMstRadio($code, $name, $val, $col)
+{
+
+	$codes = getCode($code);
+
+	$index = 0;
+	foreach($codes as $row)
+	{
+		$index++;
+		$id = $name.$index;
+		print('<input type="radio" name="'.$name.'" id="'.$id.'" value="'.$row->number.'" '.($val == $row->number ? "checked" : "").
+			  '><label for="'.$id.'" '.(isset($col) ? ' class="inblock"' : '').'>'.$row->title.'</label>');
+		if(isset($col) && $index % $col == 0){
+			print('<br>');
+		}
+		
+	}
+
+}
+
+/**
+ * コンボボックス
+ * @param unknown $code
+ * @param unknown $hasDefault
+ * @param unknown $val
+ */
+function MakeCodeMstMultiCheckbox($code, $name, $val, $col)
+{
+
+	$codes = getCode($code);
+	$vals = explode(',', $val);
+	$index = 0;
+	foreach($codes as $row)
+	{
+		$check = in_array($row->number, $vals);		
+		
+		$index++;
+		$id = $name.$index;
+		print('<input type="checkbox" name="'.$name.'[]" id="'.$id.'" value="'.$row->number.'" '.($check ? "checked" : "").
+				'><label for="'.$id.'" '.(isset($col) ? ' class="inblock"' : '').'>'.$row->title.'</label>');
+		if(isset($col) && $index % $col == 0){
+			print('<br>');
+		}
+
+	}
+
 }
 
 ?>

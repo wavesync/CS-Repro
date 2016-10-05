@@ -408,7 +408,10 @@
         * @return bool Response of PDOStatement::execute()
         */
         protected static function _execute($query, $parameters = array(), $connection_name = self::DEFAULT_CONNECTION) {
-            $statement = self::get_db($connection_name)->prepare($query);
+            
+        	$query = str_replace('"', '', $query);
+        	
+        	$statement = self::get_db($connection_name)->prepare($query);
             self::$_last_statement = $statement;
             $time = microtime(true);
 
@@ -558,9 +561,9 @@
          * dirty so all will be saved to the database when
          * save() is called.
          */
-        public function create($data=null) {
+        public function create($data=null) {        	
             $this->_is_new = true;
-            if (!is_null($data)) {
+            if (!is_null($data)) {   
                 return $this->hydrate($data)->force_all_dirty();
             }
             return $this;

@@ -251,7 +251,11 @@ h1{
 	color: #090;
 }
 
-.noborder{ border: 0px !important; }
+.noborder{ 
+	border: 0px !important;
+	background-color:white !important;
+}
+
 
 .column {
 	background-color: #FFFFCC;
@@ -952,7 +956,7 @@ table button,
 	border: 1px solid #999;
 }
 .inblock{
-	width:145px;
+	width:120px;
 	display:inline-block;
 }
 
@@ -1193,3 +1197,36 @@ display:none;
 }
 
 /*tabs*/
+
+/*============================
+Mypage
+============================*/
+#mypage label { cursor: pointer; }
+#mypage ul {list-style-type: none;font-size:12px;}
+#mypage ul.list-check-03 li { float: left; line-height: 1.3; vertical-align: middle; }
+#mypage ul.list-check-03 li { padding-bottom: 3px; }
+#mypage ul.list-check-03 li input { margin-right: 2px; }
+#mypage div.list-check-03-wrap { width: 700px; min-height: 100px; background-color: rgb(255, 255, 255); overflow: auto; }
+
+#mypage div.cont01 h3.ttl-h3-03,
+#mypage div.cont02 h3.ttl-h3-03 { margin: 0px 0px 2px; padding: 2px 0px 5px; min-height: 15px; }
+
+#mypage div.cont01 h3.ttl-h3-03 span,
+#mypage div.cont02 h3.ttl-h3-03 span { padding: 0px; }
+
+#mypage div.cont01 h3.ttl-h3-03 span span,
+#mypage div.cont02 h3.ttl-h3-03 span span { font-weight: normal; }
+
+#mypage h3.ttl-h3-03,
+#mypage h4.ttl-h4-03 { font-weight: bold;font-size:13px;height:10px; }
+
+#mypage h3.ttl-h3-03 span,
+#mypage h4.ttl-h4-03 span { color:#333;font-weight: bold;}
+
+#mypage ul.list-check-03 li { padding-bottom: 0px; width: 150px; line-height: 1.8; }
+#mypage ul.list-check-03 li input { vertical-align: middle; }
+
+#mypage div.cont02 h4.ttl-h4-03 span { padding: 0px; background-image: none; }
+#mypage div.cont02 h4.ttl-h4-03 span label { font-weight: bold; }
+
+#mypage .ttl-h4-03{clear:both;}

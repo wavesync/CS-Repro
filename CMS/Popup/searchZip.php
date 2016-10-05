@@ -4,7 +4,8 @@
 <META http-equiv="Content-Style-Type" content="text/css">
 <title>郵便番号検索</title>
 <link href="../css/popdefault.css" rel="stylesheet" type="text/css">
-
+<script type="text/javascript" src="../js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
 </head>
 
 <?php
@@ -38,8 +39,9 @@ function SearchByZip()
 		{
 			$zipCode = $zip->zip;
 			$pref = $zip->pref.$zip->city.$zip->cityArea;
+			$pref2 = $zip->pref.'|'.$zip->city.'|'.$zip->cityArea;
 			
-			echo "<option value=\"$pref\">";
+			echo "<option value=\"$pref\" address=\"$pref2\">";
 			echo "〒$zipCode&nbsp;住所:$pref";
 			echo "</option>";
 		}
@@ -88,7 +90,8 @@ function SelectAddress(obj)
 {
 	if(obj.value != "")
 	{
-		window.opener.GetAddress(obj.value);
+		val = $(obj).find('option:selected').attr('address');
+		window.opener.GetAddress(val);
 		window.close();
 	}
 }

@@ -35,19 +35,19 @@ include '../db/bukkenfilelib.php';
 	
 //$path = '../upload/';
 
-$file1 = getBukkenFile();
-$file2 = getBukkenFile();
-$file3 = getBukkenFile();
-$file4 = getBukkenFile();
-$file5 = getBukkenFile();
-$file6 = getBukkenFile();
-$file7 = getBukkenFile();
-$file8 = getBukkenFile();
-$file9 = getBukkenFile();
-$file10 = getBukkenFile();
-$file11 = getBukkenFile();
-$file12 = getBukkenFile();
-$file13 = getBukkenFile();
+$file1 = getBukkenFile(null);
+$file2 = getBukkenFile(null);
+$file3 = getBukkenFile(null);
+$file4 = getBukkenFile(null);
+$file5 = getBukkenFile(null);
+$file6 = getBukkenFile(null);
+$file7 = getBukkenFile(null);
+$file8 = getBukkenFile(null);
+$file9 = getBukkenFile(null);
+$file10 = getBukkenFile(null);
+$file11 = getBukkenFile(null);
+$file12 = getBukkenFile(null);
+$file13 = getBukkenFile(null);
 
 
 if($_SERVER["REQUEST_METHOD"] == "GET")
@@ -101,19 +101,19 @@ else
 		deleteBukkenFile($_POST['hdfCurrent']);
 	}
 	
-	$file1 = getBukkenFile();
-	$file2 = getBukkenFile();
-	$file3 = getBukkenFile();
-	$file4 = getBukkenFile();
-	$file5 = getBukkenFile();
-	$file6 = getBukkenFile();
-	$file7 = getBukkenFile();
-	$file8 = getBukkenFile();
-	$file9 = getBukkenFile();
-	$file10 = getBukkenFile();
-	$file11 = getBukkenFile();
-	$file12 = getBukkenFile();
-	$file13 = getBukkenFile();
+	$file1 = getBukkenFile(null);
+	$file2 = getBukkenFile(null);
+	$file3 = getBukkenFile(null);
+	$file4 = getBukkenFile(null);
+	$file5 = getBukkenFile(null);
+	$file6 = getBukkenFile(null);
+	$file7 = getBukkenFile(null);
+	$file8 = getBukkenFile(null);
+	$file9 = getBukkenFile(null);
+	$file10 = getBukkenFile(null);
+	$file11 = getBukkenFile(null);
+	$file12 = getBukkenFile(null);
+	$file13 = getBukkenFile(null);
 
 	$fileList = getBukkenFiles($bukkenId);
 	if(isset($fileList))
@@ -153,7 +153,7 @@ function setFileInfo($file, $id, $bukkenId)
 			move_uploaded_file($_FILES['uploadFile'.$id]["tmp_name"], $realPath.$_FILES['uploadFile'.$id]["name"]);
 			chmod($realPath.$_FILES["uploadFile".$id]["name"], 0777);
 			
-			$file = getBukkenFile();
+			$file = getBukkenFile(null);
 			$file->bukkenId = $bukkenId;
 			$file->comment = $_POST['comment'.$id];
 			$file->name = $_FILES['uploadFile'.$id]["name"];
