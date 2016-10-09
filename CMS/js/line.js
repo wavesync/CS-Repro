@@ -27,9 +27,3 @@ function SubmitForm()
 {
 	document.getElementById('form1').submit();
 }
-$(document).ready(function(){
-	$('[name="lines[]"]').each(function(){
-	})
-	$('[name="line_stations[]"]').each(function(){
-	})
-});

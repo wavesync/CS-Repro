@@ -28,7 +28,52 @@ function getMember($pid){
  * @param unknown $member
  */
 function saveMember($member){
+	
+	if(!isset($member->pid) || $member->pid <= 0){
+		$member->registerDate = date('Y-m-d H:i:s');
+		$member->memberNo = MakeMemberCode();
+	}
+	$member->updateDate = date('Y-m-d H:i:s');
+	
 	$member->save();
+}
+
+
+function MakeMemberCode()
+{
+
+	$val = '';
+	$query = ORM::for_table("MemberInfo")->where('deleteFlg', '00')->order_by_desc('memberNo')->select_many('memberNo')->find_one();
+	if(isset($query) && $query != null){
+		$val = $query->memberNo;
+	}
+	if($val === null || $val === '')
+	{
+		$val = '00001';
+	}
+	else
+	{
+		$intVal = (int)$val;
+		$intVal += 1;
+		$strVal = (string)$intVal;
+		$val = str_pad($strVal, 5, '0', STR_PAD_LEFT);
+	}
+
+	return $val;
+}
+
+function isNull($val){
+	if(!isset($val) || $val == '') return true;
+	return false;
+}
+
+function isInteger($input){
+	return(ctype_digit(strval($input)));
+}
+
+function showDate($date, $fm){
+	if(!isset($date) || $date == null) return '';
+	return date($fm, strtotime($date));
 }
 
 /**
@@ -52,7 +97,18 @@ function bindMember($member){
 }
 
 function validMember($member){
-	return '';
+	$error = array();
+	if(isNull($member->memberName)) $error[] = '<li>氏名は必須です。</li>';
+	if(isNull($member->zipCode)) $error[] = '<li>郵便番号は必須です。</li>';
+	if(isNull($member->address1)) $error[] = '<li>都道府県は必須です。</li>';
+	if(isNull($member->address2)) $error[] = '<li>市区町村は必須です。</li>';
+	if(isNull($member->address3)) $error[] = '<li>町丁目は必須です。</li>';
+	if(isNull($member->tel)) $error[] = '<li>電話番号は必須です。</li>';
+	if(isNull($member->email)) $error[] = '<li>メールアドレスは必須です。</li>';
+	if(isNull($member->password)) $error[] = '<li>パスワードは必須です。</li>';
+	if(isNull($member->connectMethod)) $error[] = '<li>当社からの連絡方法は必須です。</li>';
+	if(isNull($member->connectTime)) $error[] = '<li>連絡希望時間は必須です。</li>';
+	return implode('<br>', $error);
 }
 
 /*希望情報*/
@@ -150,24 +206,44 @@ function MakeComboIncome($hasDefault, $val)
  * @param unknown $job
  */
 function bindHope($hope){
-	$columns = array('hopeArea','hopeAreaOther','hopePriceFrom','hopePriceTo','hopeSquareFrom','hopeSquareTo','hopeWalk','hopeLine','hopeStation','hopeYear');
+	$columns = array('memberInfoPid','hopeArea','hopeAreaOther','hopePriceFrom','hopePriceTo','hopeSquareFrom','hopeSquareTo','hopeWalk','hopeLine','hopeStation','hopeYear');
 	foreach($_POST as $key => $value){
 		if($key == 'pid') continue;
 		if(!in_array($key, $columns)) continue;
 		//マルチチェックボックス
+		
 		if(is_array($value)){
-			$hope->$key = implode(',', $value);
+			$hope->$key = implode(',', $value);			
 		}
 		else {
 			$hope->$key = $value;
 		}
 	}
+	
+	if(!isset($_POST['hopeArea'])) $hope->hopeArea = null;
+	if(!isset($_POST['hopeLine'])) $hope->hopeLine = null;
+	if(!isset($_POST['hopeStation'])) $hope->hopeStation = null;
+	
 }
+
+function validateHope($hope){
+	$error = array();
+	if(isNull($hope->hopeArea) && isNull($hope->hopeLine)) $error[] = '<li>希望エリアもしく希望路線は必須です。</li>';
+	if(isNull($hope->hopePriceFrom) && isNull($hope->hopePriceTo)) $error[] = '<li>予算は必須です。</li>';
+	return implode('<br>', $error);
+}
+
+
 /**
  * 会員保存
  * @param unknown $member
  */
 function saveHope($hope){
+	if($hope->pid <= 0){
+		$hope->insertDateTime = date('Y-m-d H:i:s');
+	}
+	$hope->updateDateTime = date('Y-m-d H:i:s');
+	
 	$hope->save();
 }
 ?>

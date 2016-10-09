@@ -32,7 +32,7 @@ include 'db/memberlib.php';
 			$info = getMember($_POST['pid']);
 		}
 		else {
-			$info = getMember();
+			$info = getMember(null);
 		}
 		
 		bindMember($info); //POSTから会員情報を取得
@@ -53,11 +53,8 @@ include 'db/memberlib.php';
 			else if($action == 2)
 			{				
 				saveMember($info);
-?>
-				<script language = 'javascript'>
-					window.location.href = 'memberlist.php';
-				</script>
-<?php 
+				header('Location:memberlist.php?back');
+				exit;
 			}
 		}
 		else
@@ -69,6 +66,12 @@ include 'db/memberlib.php';
 		
 ?>
 
+<div align="center"> 
+	<a href="memberlist.php"><img src="images/global/demobtn_list.gif" alt="一覧へ" border="0" ></a>
+	<a href="#" onclick="document.forms['frm'].submit()">
+		<img src="images/global/demobtn_confirm.gif" alt="確認" border="0" />
+	</a> 		
+</div>
 <font color="red">
 	<ul>
 		<?php echo $error ?>
@@ -80,9 +83,9 @@ include 'db/memberlib.php';
 <input type="hidden" name="action" value="<?php echo $action ?>" id="action">
 <table class="dataTbl">
 	<tr>
-		<th width="15%" >コード(<span class="hissu">*</span>)</th>
+		<th width="15%" >コード</th>
 		<td colspan="3">			
-			<input type="text" name="memberNo" style="width:100px;ime-mode:disabled" maxlength="8" value="<?php echo $info->memberNo; ?>"  /> 			
+			<input type="text" name="memberNo"  readonly="readonly" style="width:150px" value="<?php echo $info->memberNo; ?>"  /> 			
 		</td>
 	</tr>
 	<tr>
@@ -191,7 +194,7 @@ include 'db/memberlib.php';
 	</tr>
 	<tr>
 		<th>登録日</th>
-		<td><input type="text" name="registerDate" style="width:150px;" readonly="readonly" value="<?php echo $info->registerDate; ?>"></td>
+		<td><input type="text" name="registerDate" style="width:150px;" readonly="readonly" value="<?php echo showDate($info->registerDate, 'Y/m/d'); ?>"></td>
 		<th>削除フラグ</th>
 		<td>
 			<input type="checkbox" name="deleteFlg" value="01" <?php if($info->deleteFlg == '01') echo "checked";?> >
@@ -201,14 +204,15 @@ include 'db/memberlib.php';
 </form>
 <br/>
 
-
 <div align="center"> 
-	<a href="memberlist.php">
-		<img src="images/global/demobtn_list.gif" alt="一覧へ" border="0" onmouseover="ImageMouse(this, 'demobtn_list_o.gif')" onmouseout="ImageMouse(this, 'demobtn_list.gif')"></a>
+	<a href="memberlist.php"><img src="images/global/demobtn_list.gif" alt="一覧へ" border="0" ></a>
 	<a href="#" onclick="document.forms['frm'].submit()">
-		<img src="images/global/demobtn_confirm.gif" alt="確認" border="0" onmouseover="ImageMouse(this, 'demobtn_confirm_o.gif')" onmouseout="ImageMouse(this, 'demobtn_confirm.gif')"/>
+		<img src="images/global/demobtn_confirm.gif" alt="確認" border="0" />
 	</a> 		
 </div>
+
+<!-- 子供一覧 -->
+<div id="child" <?php if($info->pid <= 0) echo 'style="display:none"'?>>
 
 <ul id="tablist">
 <li><a href="#" class="current" onClick="return expandcontent('sc1', this)" theme="#EAEAFF">希望一覧</a></li>
@@ -218,6 +222,10 @@ include 'db/memberlib.php';
 <DIV id="tabcontentcontainer">
 
 <div id="sc1" class="tabcontent">
+	
+	<a href='#' onclick="newHope(<?php echo $info->pid?>)" style="float:right;padding:5px;padding-right:10px;">
+		<img src="images/global/demobtn_register.gif" alt="新規登録" border="0" id="imgRegister">
+	</a>
 	<table class="listTbl tablesorter" id="tblHope" style="width:1100px;margin-top:10px;margin-bottom:10px;">
 	<thead>
 	<tr>		
@@ -247,7 +255,11 @@ include 'db/memberlib.php';
 		<td class="textcenter" ><?php echo displayFromTo($hope->hopePriceFrom, $hope->hopePriceTo, 10000, '万円')?></td>
 		<td class="textcenter" ><?php echo displayFromTo($hope->hopeSquareFrom,$hope->hopeSquareTo, 1, '㎡');?></td>		
 		<td><?php echo $hope->hopeLine;?></td>
-		<td><?php echo $hope->hopeStation;?></td>
+		<td>
+			<?php
+				echo str_replace('|', '<br>', str_replace('-', ': ', $hope->hopeStation));
+			?>
+		</td>
 		<td class="textcenter" ><?php echo $hope->hopeWalk;?></td>
 	</tr>
 	<?php }?>
@@ -280,6 +292,9 @@ include 'db/memberlib.php';
 
 </DIV>
 
+</div>
+<!-- 子供一覧 -->
+
 <br>
 <script language="javascript">
 <?php if($action == 1)
@@ -296,8 +311,13 @@ include 'db/memberlib.php';
 <?php } ?>
 
 function hopeDetail(id){
-	var url = "hopedetail.php?pid=" + id;
-	window.open(url,"_blank","toolbar=no,location=no,directories=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,width=" + screen.width + ",height=" + screen.height);
+	url = "hopedetail.php?pid=" + id;	
+	popup = window.open(url,"_blank","toolbar=no,location=no,directories=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,width=1500,height=900");
+}
+
+function newHope(id){
+	url = "hopedetail.php?memberInfoPid=" + id;	
+	popup = window.open(url,"_blank","toolbar=no,location=no,directories=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,width=1500,height=900");
 }
 
 function OpenZip(zip)

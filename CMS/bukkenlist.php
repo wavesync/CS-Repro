@@ -4,9 +4,7 @@
 
 <?php
 
-	$isShowTableHeader = false;
-	$clientMst = unserialize($_SESSION['UserMst']);
-	
+	$isShowTableHeader = false;	
 	$searchInfo = getBukken(null);	
 	
 	
@@ -15,8 +13,9 @@
 		if(isset($_SESSION['searchObject']))
 		{			
 			$arr = $_SESSION['searchObject'];			
-			$searchInfo->openFlg = $arr[0];
-			$searchInfo->objectName = $arr[1];		
+			$searchInfo->memberFlg = $arr[0];
+			$searchInfo->objectName = $arr[1];	
+			$searchInfo->publishFlg = $arr[2];
 								
 			$objectList = searchBukken($searchInfo, "00");	
 			$isShowTableHeader = true;		
@@ -32,11 +31,12 @@
 			DeleteAllBukken($_POST['pid']);
 		}
 		#削除
-		
-		$searchInfo->openFlg = $_POST['openFlg'];
+		$searchInfo->memberFlg = $_POST['memberFlg'];
 		$searchInfo->objectName = $_POST['objectName'];
+		$searchInfo->publishFlg = $_POST['publishFlg'];		
 					
-		$_SESSION['searchObject'] = array($_POST['openFlg'], $_POST['objectName'], $ok);		
+		$_SESSION['searchObject'] = array($_POST['memberFlg'], $_POST['objectName'], $_POST['publishFlg']);	
+		echo ($searchInfo->memberFlg);
 		$objectList = searchBukken($searchInfo, "00");
 	}
 	function CleanNumber($num)
@@ -85,7 +85,7 @@
 <input type="hidden" name="act" id="hidAct"></input>
 <input type="hidden" name="pid" id="hidPid"></input>
 	
-<table cellspacing="1" cellpadding="0" class="dataTbl"> 
+<table class="dataTbl"> 
 	<?php if($isShowTableHeader){?>
 	<tr>
 		<td colspan="5" id="tableHeader">再検索</td>
@@ -94,9 +94,9 @@
 	<tr>
 		<th width="15%" >自社・他社</th>
 		<td colspan="3">
-			<input type="radio"  name="memberFlg" value="00" <?php if($searchInfo->memberFlg == "00"){echo 'checked';}?> />自社
-			<input type="radio"  name="memberFlg" value="01" <?php if($searchInfo->memberFlg == "01"){echo 'checked';}  ?>/>他社
-			<input type=radio  name="memberFlg" value="02" <?php if($searchInfo->memberFlg == "02"){echo 'checked';}  ?>/>東日本レインズ
+			<input type="radio" name="memberFlg" value="00" <?php if($searchInfo->memberFlg == "00"){echo 'checked';}?> />自社
+			<input type="radio" name="memberFlg" value="01" <?php if($searchInfo->memberFlg == "01"){echo 'checked';}  ?>/>他社
+			<input type=radio name="memberFlg" value="02" <?php if($searchInfo->memberFlg == "02"){echo 'checked';}  ?>/>東日本レインズ
 		</td>
 	</tr>
 	<tr>
@@ -106,9 +106,9 @@
 		</td>
 		<th nowrap width="15%" >ネット公開</th> 
 		<td nowrap> 
-			<input type="radio"  name="openFlg" value="" <?php if(isset($searchInfo) && $searchInfo->openFlg == ""){echo 'checked';}?> />全て
-			<input type="radio"  name="openFlg" value="01" <?php if(isset($searchInfo) && $searchInfo->openFlg == "01"){echo 'checked';}  ?>/>公開中
-			<input type=radio  name="openFlg" value="00" <?php if(isset($searchInfo) && $searchInfo->openFlg == "00"){echo 'checked';}  ?>/>非公開 
+			<input type="radio" name="publishFlg" value="" <?php if(isset($searchInfo) && $searchInfo->publishFlg == ""){echo 'checked';}?> />全て
+			<input type="radio" name="publishFlg" value="01" <?php if(isset($searchInfo) && $searchInfo->publishFlg == "01"){echo 'checked';}  ?>/>公開中
+			<input type=radio name="publishFlg" value="00" <?php if(isset($searchInfo) && $searchInfo->publishFlg == "00"){echo 'checked';}  ?>/>非公開 
 		</td> 
 	</tr>
 </table> 
@@ -117,11 +117,11 @@
 
 <div align="center">
 	<a href='bukkendetail.php'>
-		<img src="images/global/demobtn_register.gif" alt="新規登録" border="0" id="imgRegister" onmouseover="ImageMouse(this, 'demobtn_register_o.gif')" onmouseout="ImageMouse(this, 'demobtn_register.gif')"></a>
+		<img src="images/global/demobtn_register.gif" alt="新規登録" border="0" id="imgRegister"></a>
 	<a href="#" onclick="document.forms['frm'].submit();" >
-		<img src="images/global/demobtn_search.gif" alt="検索" border="0" onmouseover="ImageMouse(this, 'demobtn_search_o.gif')" onmouseout="ImageMouse(this, 'demobtn_search.gif')"></a>
+		<img src="images/global/demobtn_search.gif" alt="検索" border="0"></a>
 	<a href="#">
-		<img src="images/global/demobtn_clear.gif" alt="クリア" border="0" onclick="ClearCon()" onmouseover="ImageMouse(this, 'demobtn_clear_o.gif')" onmouseout="ImageMouse(this, 'demobtn_clear.gif')" ></a>
+		<img src="images/global/demobtn_clear.gif" alt="クリア" border="0" onclick="ClearCon()" ></a>
 </div>
 
 <br>
@@ -160,8 +160,8 @@
 			<td class="textcenter"><?php echo $bukken->objectCode ?></td>
 			<td><?php echo $bukken->objectName ?></td>
 			<td>
-				<?php echo $bukken->line1 ?><br>
-				<?php echo $bukken->station1 ?>
+				<?php echo $bukken->route1Name ?><br>
+				<?php echo $bukken->station1Name ?>
 			</td>
 			<td><?php echo $bukken->address ?></td>			
 			<td class="textcenter">

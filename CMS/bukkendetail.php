@@ -20,23 +20,37 @@
 		}
 	}	
 	if($_SERVER["REQUEST_METHOD"] == "POST")
-	{			
-		if(isset($_POST['pid']))
+	{		
+		$action = $_POST['action'];
+		if($_POST['pid'] > 0)
 		{
 			$bukken = getBukken($_POST['pid']);	
 		}	
 		else {
-			$bukken = getBukken();
+			$bukken = getBukken(null);
 		}
 		
 		bindBukken($bukken); //POSTから求人情報を取得
 		$error = validateBukken($bukken); //チェック
-		if($error == ''){
-			saveBukken($bukken); //求人保存
-			header('Location:bukkenlist.php?back');
-			exit;
-		}						
-	}	
+		
+		if($error == '')
+		{
+			if($action == 0)
+			{
+				$action = 1;
+			}
+			else if($action == 2)
+			{
+				$bukkenId = saveBukken($bukken); //求人保存
+				header('Location:bukkenlist.php?back');
+				exit;
+			}
+		}
+		else
+		{
+			$action = 0;
+		}							
+	}
 
 	function CleanNumber($num)
 	{
@@ -212,7 +226,7 @@
  
 	<tr>
 		<th rowspan="5" id="crossRow">交<br>通</th>
-		<th class="noImg">所在地(<span class="hissu">*</span>)</th>
+		<th >所在地(<span class="hissu">*</span>)</th>
 		<td colspan=3 >
 			〒<input type="text" name="zipCode" size="8" maxlength="7" style="ime-mode:disabled" id="txtZip" value="<?php echo $bukken->zipCode ?>"/>
 			<a href="javascript:OpenZip(document.getElementById('txtZip').value);">
@@ -221,42 +235,42 @@
 		</td>
 	</tr>
 	<tr>
-		<th class="noImg">最寄駅1(<span class="hissu">*</span>)</th>
+		<th >最寄駅1(<span class="hissu">*</span>)</th>
 		<td colspan="3">
 			<span class="spanH">路線:</span><input type="text" name="route1Name" maxlength="15" size="25" id="txtRoute1Name"  style="ime-mode:active" value="<?php echo $bukken->route1Name ?>" />
 			&nbsp;<span class="spanH">駅:</span><input type="text" name="station1Name" maxlength="15" id="txtStation1Name" size="25"   style="ime-mode:active" value="<?php echo $bukken->station1Name ?>" />
 			<a href="javascript:OpenStation('1');">
 				<img src='./images/global/btn2_search.png' alt="検索" border="0" style="margin-bottom: -5px;" /></a> &ensp;&ensp;&ensp;&ensp;
-			駅徒歩:<input type="text" name="station1Walk" style="ime-mode:disabled" maxlength="3" size="5" id="txtStation1Walk"  style="ime-mode:active" value="<?php echo $bukken->station1Walk ?>" /> 分
+			駅徒歩:<input type="number" name="station1Walk" maxlength="3" class="textright" style="width:50px" id="txtStation1Walk"  value="<?php echo $bukken->station1Walk ?>" /> 分
 			<div style="margin-top:5px">
 				備考&nbsp;<input type="text" name="traffic1Note" maxlength="100" id="txttraffic1Note" size="50"   style="ime-mode:active" value="<?php echo $bukken->traffic1Note ?>" />
 			</div>		
 		</td>
 	</tr>		
 	<tr>
-		<th class="noImg">最寄駅2</th>
+		<th >最寄駅2</th>
 		<td colspan="3">
 			路線:<input type="text" name="route2Name" maxlength="15" size="25"  id="txtRoute2Name"  style="ime-mode:active" value="<?php echo $bukken->route2Name ?>" />
 			&nbsp;駅:<input type="text" name="station2Name" maxlength="15" size="25"  id="txtStation2Name"  style="ime-mode:active" value="<?php echo $bukken->station2Name ?>" />
 			<a href="javascript:OpenStation('2');">
 				<img src='./images/global/btn2_search.png' alt="検索" style="margin-bottom: -5px;" border="0" /></a> &ensp;&ensp;&ensp;&ensp;				
-			駅徒歩:<input type="text" name="station2Walk" style="ime-mode:disabled" maxlength="3" size="5" id="txtStation2Walk"  style="ime-mode:active" value="<?php echo $bukken->station2Walk ?>" /> 分
+			駅徒歩:<input type="number" name="station2Walk" maxlength="3" class="textright" style="width:50px" id="txtStation2Walk" value="<?php echo $bukken->station2Walk ?>" /> 分
 			
 		</td>
 	</tr>
 	<tr>
-		<th class="noImg">最寄駅3</th>
+		<th >最寄駅3</th>
 		<td colspan="3">
 			路線:<input type="text" name="route3Name" maxlength="15" size="25"  id="txtRoute3Name"  style="ime-mode:active" value="<?php echo $bukken->route3Name ?>" />
 			&nbsp;駅:<input type="text" name="station3Name" maxlength="15" size="25"  id="txtStation3Name"  style="ime-mode:active" value="<?php echo $bukken->station3Name ?>" />
 			<a href="javascript:OpenStation('3');">
 				<img src='./images/global/btn2_search.png' alt="検索" style="margin-bottom: -5px;" border="0" /></a> &ensp;&ensp;&ensp;&ensp;
-			駅徒歩:<input type="text" name="station3Walk" style="ime-mode:disabled" maxlength="3" size="5" id="txtStation3Walk"  style="ime-mode:active" value="<?php echo $bukken->station3Walk ?>" /> 分
+			駅徒歩:<input type="number" name="station3Walk" maxlength="3" class="textright" style="width:50px" id="txtStation3Walk" value="<?php echo $bukken->station3Walk ?>" /> 分
 			
 		</td>
 	</tr>
 	<tr>
-		<th class="noImg">その他交通手段</th>
+		<th >その他交通手段</th>
 		<td colspan="3">
 			<input type="text" name="bus" size="105" maxlength="20" style="ime-mode:active" value="<?php echo $bukken->bus ?>" />
 		</td>
@@ -265,11 +279,11 @@
 	<tr>
 		<th colspan="2">情報登録日</th>
 		<td>
-			<input type="text" name="registTime" class="textright" id="txtRegistTime" style="ime-mode:disabled" maxlength="8" size="15" value="<?php echo $bukken->registTime ?>" />
+			<input type="date" name="registTime" class="textright" id="txtRegistTime" size="15" value="<?php echo $bukken->registTime ?>" />
 			<input type=button  title="今日" value="今日" onclick="SetToday();">	
 		</td>
 		<th>情報有効期限</th>
-		<td><input type="text" name="limitTime" class="textright" style="ime-mode:disabled" maxlength="8" size="15" value="<?php echo $bukken->limitTime ?>" /></td>
+		<td><input type="date" name="limitTime" class="textright" size="15" value="<?php echo $bukken->limitTime ?>" /></td>
 	</tr>	
 <!-- </table>-->
 
@@ -288,34 +302,33 @@
 <!-- 建物 -->
 	<tr>
 		<th rowspan="3" id="crossRow">建<br/>物</th>
-		<th class="noImg" style="width:13%" >築年月</th>
+		<th  style="width:13%" >築年月</th>
 		<td style="width:37%" >
 			<input type="text" name="tikuYear" id="txtTikuYear" class="textright" style="ime-mode:disabled" maxlength="20" size="20" value="<?php echo $bukken->tikuYear ?>" />			
 		</td>
 		<th style="width:13%" >戸数・階</th>
 		<td>
-			総戸数<input type="text" class="textright" name="souKosu" id="txtSouKosu" style="ime-mode:disabled" maxlength="3" size="5" value="<?php echo $bukken->souKosu ?>" />
-			<label id="lblSyozaikai">所在階</label><input type="text" name="room1Kai" style="ime-mode:active" id="txtRoom1Kai" maxlength="10" size="15" value="<?php echo $bukken->room1Kai ?>" />
+			&ensp;総戸数&ensp;<input type="number" class="textright" name="souKosu" id="txtSouKosu" maxlength="3" style="width:80px" value="<?php echo $bukken->souKosu ?>" />
+			&nbsp;<label id="lblSyozaikai">所在階</label>&ensp;<input type="number" class="textright" name="room1Kai" id="txtRoom1Kai" maxlength="3" style="width:80px" value="<?php echo $bukken->room1Kai ?>" />
 		</td>
 	</tr>
 	<tr>
-		<th class="noImg">建物構造</th>
+		<th >建物構造</th>
 		<td>
 			<select name="structure" id="lstStructure" >	
 				<?php MakeComboStructure(true, $bukken->structure);?> 
 			</select><br>
+
 			<table>
 				<tr>
 					<th class="noborder">地上階層</th>
-					<td class="noborder"><input type="text" name="chijouKai" style="ime-mode:active" id="txtChijouKai" maxlength="2" size="10" value="<?php echo $bukken->chijouKai ?>" />階</td>
+					<td class="noborder"><input type="number" class="textright" name="chijouKai" id="txtChijouKai" maxlength="2" style="width:50px" value="<?php echo $bukken->chijouKai ?>" />&ensp;階</td>
 					<th class="noborder">地下階層</th>
-					<td class="noborder"><input type="text" name="chikaKai" style="ime-mode:active" id="txtChikaKai" maxlength="2" size="10" value="<?php echo $bukken->chikaKai ?>" />階</td>
-				</tr>
-				<tr>
+					<td class="noborder"><input type="number" class="textright" name="chikaKai" id="txtChikaKai" maxlength="2" style="width:50px" value="<?php echo $bukken->chikaKai ?>" />&ensp;階</td>
 					<th class="noborder">所在階</th>
-					<td class="noborder" colspan="3"><input type="text" name="syozaiKai" style="ime-mode:active" id="txtSyozaiKai" maxlength="2" size="10" value="<?php echo $bukken->syozaiKai ?>" />階</td>
+					<td class="noborder" colspan="3"><input type="number" class="textright" name="syozaiKai" id="txtSyozaiKai" maxlength="2" style="width:50px" value="<?php echo $bukken->syozaiKai ?>" />&ensp;階</td>
 				</tr>
-			</table>								
+			</table>															
 		</td>
 		
 		<th>専有面積</th>
@@ -324,7 +337,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th class="noImg">部屋番号</th>
+		<th >部屋番号</th>
 		<td>	
 			<input type="text" name="roomNo" style="ime-mode:active" id="txtRoomNo" maxlength="20" size="35" value="<?php echo $bukken->roomNo ?>" />		
 		</td>
@@ -340,7 +353,7 @@
 <!-- 駐車場 -->
 	<tr>
 		<th rowspan="2" id="crossRow">駐<br/>車<br/>場</th>
-		<th class="noImg">駐車場有無</th>
+		<th >駐車場有無</th>
 		<td>
 			<select name="parking" id="lstParking" >
 				<?php MakeComboParking(true, $bukken->parking);?>
@@ -354,9 +367,9 @@
 		</td>
 	</tr>
 	<tr>
-		<th class="noImg">駐車場費</th>
+		<th >駐車場費</th>
 		<td colspan=3>	
-			<input type="text" name="parkingPrice" id="txtParkingPrice" maxlength="128" size="35" value="<?php echo $bukken->parkingPrice ?>" />	
+			<input type="text" class="textright" name="parkingPrice" id="txtParkingPrice" maxlength="7" size="15" value="<?php echo $bukken->parkingPrice ?>" />&ensp;円／月	
 		</td>		
 	</tr>
 <!-- 駐車場 -->
@@ -364,13 +377,13 @@
 <!-- 管理 -->
 	<tr>
 		<th rowspan="4" id="crossRow">管<br/>理</th>
-		<th class="noImg">施工会社</th>
+		<th >施工会社</th>
 		<td colspan="3">
 			<input type="text" name="sekouCompany" id="txtSekouCompany" style="ime-mode:active" maxlength="25" size="35" value="<?php echo $bukken->sekouCompany ?>" />
 		</td>
 	</tr>
 	<tr>
-		<th class="noImg">管理会社</th>
+		<th >管理会社</th>
 		<td>	
 			<input type="text" name="kanriCompany" id="txtKanriCompany" style="ime-mode:active" maxlength="25" size="35" value="<?php echo $bukken->kanriCompany ?>" />	
 		</td>
@@ -382,7 +395,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th class="noImg">管理費</th>
+		<th >管理費</th>
 		<td>	
 			<input type="text" class="textright" id="txtKanriPrice" name="kanriPrice" style="ime-mode:disabled" maxlength="7" size="15" value="<?php echo $bukken->kanriPrice ?>" />&ensp;円／月		
 		</td>
@@ -393,7 +406,7 @@
 	</tr>
 	
 	<tr>
-		<th class="noImg">専用庭</th>
+		<th >専用庭</th>
 		<td>
 			<input type="text" class="textright" name="niwaArea" id="txtNiwaArea" style="ime-mode:disabled" maxlength="8" size="15" value="<?php echo CleanNumber($bukken->niwaArea) ?>" />&ensp;㎡							
 		</td>
@@ -498,7 +511,7 @@
     <!-- マップブロック -->
     <tr>
 		<th rowspan="2" id="crossRow">地<br/>図<br/>情<br/>報</th>
-		<th class="noImg">GoogleMap</th>
+		<th>GoogleMap</th>
 		<td colspan="3">
 			<input type="checkbox" name="gmapShowMap" id="chkGmapShowMap" value="01" <?php if($bukken->gmapShowMap === '01') echo 'checked' ?> >地図を表示&nbsp;
 			<input type="checkbox" name="gmapShowView" id="chkGmapShowView" value="01" <?php if($bukken->gmapShowView === '01') echo 'checked' ?> >StreetViewを表示<br>
@@ -601,7 +614,7 @@ function SetToday()
 	if(month < 10) month = "0" + String(month);
 	var day = now.getDate();
 	if(day < 10) day = "0" + String(day);
-	document.getElementById('txtRegistTime').value = String(now.getFullYear()) + String(month) + String(day);
+	document.getElementById('txtRegistTime').value = String(now.getFullYear()) + '-' + String(month) + '-' + String(day);
 }
 
 </script> 

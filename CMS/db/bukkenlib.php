@@ -21,7 +21,17 @@ function getBukken($bukkenId){
  * @param unknown $flg
  */
 function searchBukken($searchInfo, $flg){
-	return 	ORM::for_table("Bukken")->find_many();
+	$query = ORM::for_table("Bukken");
+	if(!isNull($searchInfo->memberFlg)){
+		$query = $query->where('memberFlg', $searchInfo->memberFlg);
+	}
+	if(!isNull($searchInfo->publishFlg)){
+		$query = $query->where('publishFlg', $searchInfo->publishFlg);
+	}
+	if(!isNull($searchInfo->objectName)){
+		$query = $query->where_like('objectName', '%'.$searchInfo->objectName.'%');
+	}
+	return $query->order_by_desc('updateDateTime')->order_by_asc('objectCode')->find_many();
 }
 
 
@@ -63,8 +73,29 @@ function validateBukken($bukken){
 	if(isNull($bukken->torihiki)) $error[] = '<li>取引態様は必須です。</li>';
 	if(isNull($bukken->price)) $error[] = '<li>物件価格は必須です。</li>';
 	else {
-		if(!is_int($bukken->price)) $error[] = '<li>物件価格は不正です。</li>';
+		if(isInteger($bukken->price) == false) $error[] = '<li>物件価格は不正です。</li>';
 	}
+	if(isNull($bukken->zipCode)) $error[] = '<li>郵便番号は必須です。</li>';
+	if(isNull($bukken->address)) $error[] = '<li>住所は必須です。</li>';
+	if(isNull($bukken->route1Name)) $error[] = '<li>路線1は必須です。</li>';
+	if(isNull($bukken->station1Name)) $error[] = '<li>駅1は必須です。</li>';
+	if(!isNull($bukken->station1Walk) && isInteger($bukken->station1Walk) == false) $error[] = '<li>駅徒歩1は不正です。</li>';
+	if(!isNull($bukken->station2Walk) && isInteger($bukken->station2Walk) == false) $error[] = '<li>駅徒歩2は不正です。</li>';
+	if(!isNull($bukken->station3Walk) && isInteger($bukken->station3Walk) == false) $error[] = '<li>駅徒歩3は不正です。</li>';
+	
+	if(!isNull($bukken->souKosu) && isInteger($bukken->souKosu) == false) $error[] = '<li>総戸数は不正です。</li>';
+	if(!isNull($bukken->room1Kai) && isInteger($bukken->room1Kai) == false) $error[] = '<li>所在階は不正です。</li>';
+	if(!isNull($bukken->chijouKai) && isInteger($bukken->chijouKai) == false) $error[] = '<li>地上階層は不正です。</li>';
+	if(!isNull($bukken->chikaKai) && isInteger($bukken->chikaKai) == false) $error[] = '<li>地下階層は不正です。</li>';
+	if(!isNull($bukken->syozaiKai) && isInteger($bukken->syozaiKai) == false) $error[] = '<li>所在階は不正です。</li>';
+	if(!isNull($bukken->parkingPrice) && isInteger($bukken->parkingPrice) == false) $error[] = '<li>駐車場費は不正です。</li>';
+	if(!isNull($bukken->kanriPrice) && isInteger($bukken->kanriPrice) == false) $error[] = '<li>管理費は不正です。</li>';
+	if(!isNull($bukken->syuzenPrice) && isInteger($bukken->syuzenPrice) == false) $error[] = '<li>修繕積立金は不正です。</li>';
+	
+	if(!isNull($bukken->senyuArea) && is_numeric($bukken->senyuArea) == false) $error[] = '<li>専有面積は不正です。</li>';
+	if(!isNull($bukken->niwaArea) && is_numeric($bukken->niwaArea) == false) $error[] = '<li>専用庭は不正です。</li>';
+	if(!isNull($bukken->balArea) && is_numeric($bukken->balArea) == false) $error[] = '<li>バルコニー（テラス）面積は不正です。</li>';
+	
 	return implode('<br>', $error);
 }
 
@@ -73,15 +104,63 @@ function isNull($val){
 	return false;
 }
 
+function isInteger($input){
+	return(ctype_digit(strval($input)));
+}
+
 /**
  * 物件情報保存
  * @param unknown $job
  */
 function saveBukken($bukken){
 	if(!isset($bukken->pid) || $bukken->pid <= 0){
-		$job->insertDateTime = date('Y-m-d H:i:s');
+		$bukken->insertDateTime = date('Y-m-d H:i:s');
+		$bukken->objectCode = MakeBukkenCode();
 	}
+	$bukken->updateDateTime = date('Y-m-d H:i:s');
+	
+	if(isNull($bukken->station1Walk)) $bukken->station1Walk = null;
+	if(isNull($bukken->station2Walk)) $bukken->station2Walk = null;
+	if(isNull($bukken->station3Walk)) $bukken->station3Walk = null;
+	
+	if(isNull($bukken->souKosu)) $bukken->souKosu = null;
+	if(isNull($bukken->room1Kai)) $bukken->room1Kai = null;
+	if(isNull($bukken->chijouKai)) $bukken->chijouKai = null;
+	if(isNull($bukken->chikaKai)) $bukken->chikaKai = null;	
+	if(isNull($bukken->syozaiKai)) $bukken->syozaiKai = null;
+	if(isNull($bukken->parkingPrice)) $bukken->parkingPrice = null;
+	if(isNull($bukken->kanriPrice)) $bukken->kanriPrice = null;
+	if(isNull($bukken->syuzenPrice)) $bukken->syuzenPrice = null;
+	
+	if(isNull($bukken->senyuArea)) $bukken->senyuArea = null;
+	if(isNull($bukken->niwaArea)) $bukken->niwaArea = null;
+	if(isNull($bukken->balArea)) $bukken->balArea = null;
 	$bukken->save();
+	return $bukken->pid;
+}
+
+
+function MakeBukkenCode()
+{
+
+	$val = '';
+	$query = ORM::for_table("Bukken")->where('deleteFlg', '00')->order_by_desc('objectCode')->select_many('objectCode')->find_one();
+	if(isset($query) && $query != null){
+		$val = $query->objectCode;
+	}
+	if($val === null || $val === '')
+	{
+		$val = '00001';
+	}
+	else
+	{
+		$intVal = (int)$val;
+		$intVal += 1;
+		$strVal = (string)$intVal;		
+		$val = str_pad($strVal, 5, '0', STR_PAD_LEFT);
+	}
+
+	return $val;
 }
 
 #敷地権利
