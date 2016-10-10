@@ -38,6 +38,39 @@ function saveMember($member){
 	$member->save();
 }
 
+/**
+ * 会員情報検索
+ * @param unknown $searchInfo
+ * @return IdiormResultSet
+ */
+function searchMember($searchInfo){
+	$query = ORM::for_table('MemberInfo')
+				->table_alias('mb')
+				->distinct()->select('mb.pid,mb.memberNo, mb.memberName, mb.tel,mb.email')
+				->join('HopeInfo', 'mb.pid = hope.memberInfoPid', 'hope');
+
+	if(!isNull($searchInfo->memberName)) $query = $query->where_like('memberName', '%'.$searchInfo->memberName.'%');
+	if(!isNull($searchInfo->tel)) $query = $query->where_like('tel', '%'.$searchInfo->tel.'%');
+	if(!isNull($searchInfo->hopeArea)){
+		$areas = explode(',', $searchInfo->hopeArea);
+		$con = array();
+		foreach($areas as $area){
+			$con[] = "hope.hopeArea like '%".$area."%'";
+		}
+		$whereArea = '('.implode(' OR ', $con).')';
+		$query = $query->where_raw($whereArea);
+	}
+	
+	if(!isNull($searchInfo->hopePriceFrom)) $query = $query->where_gte('hope.hopePriceFrom', $searchInfo->hopePriceFrom);
+	if(!isNull($searchInfo->hopePriceTo)) $query = $query->where_raw('(hope.hopePriceTo IS NULL OR hope.hopePriceTo = 0 OR hope.hopePriceTo >= ?)', array($searchInfo->hopePriceTo));
+	
+	if(!isNull($searchInfo->hopeSquareFrom)) $query = $query->where_gte('hope.hopeSquareFrom', $searchInfo->hopeSquareFrom);
+	if(!isNull($searchInfo->hopeSquareTo)) $query = $query->where_raw('(hope.hopeSquareTo IS NULL OR hope.hopeSquareTo = 0 OR hope.hopeSquareTo >= ?)', array($searchInfo->hopeSquareTo));
+	
+	if($searchInfo->hopeYear > 0) $query = $query->where_lte('hope.hopeYear', $searchInfo->hopeYear);
+	
+	return $query->find_many();
+}
 
 function MakeMemberCode()
 {

@@ -5176,7 +5176,7 @@ $(document).ready(function(){
 			</select>&nbsp;～
 			<select name="hopePriceTo" id="lstHopePriceTo" >
 				<?php MakeCodeMstCombo('0027', false, $hope->hopePriceTo)?>
-				<option value="" <?php if(isNull($hope->hopePriceFrom)) echo 'selected="selected"' ?>>上限なし</option>
+				<option value="" <?php if(isNull($hope->hopePriceTo) || $hope->hopePriceTo == 0) echo 'selected="selected"' ?>>上限なし</option>
 			</select>
 		</td>
 	</tr>
@@ -5189,7 +5189,7 @@ $(document).ready(function(){
 			</select>&nbsp;～
 			<select name="hopeSquareTo" id="lstHopeSquareTo" >
 				<?php MakeCodeMstCombo('0026', false, $hope->hopeSquareTo)?>
-				<option value="" <?php if(isNull($hope->hopeSquareTo)) echo 'selected="selected"' ?>>上限なし</option>
+				<option value="" <?php if(isNull($hope->hopeSquareTo) || $hope->hopeSquareTo == 0) echo 'selected="selected"' ?>>上限なし</option>
 			</select>
 		</td>
 	</tr>

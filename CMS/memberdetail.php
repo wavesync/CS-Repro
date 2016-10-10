@@ -252,7 +252,7 @@ include 'db/memberlib.php';
 	<tr>
 		<td class="textcenter"><a href="#" onclick="hopeDetail(<?php echo $hope->pid?>)">詳細</a></td>
 		<td><?php echo $hope->hopeArea?> </td>
-		<td class="textcenter" ><?php echo displayFromTo($hope->hopePriceFrom, $hope->hopePriceTo, 10000, '万円')?></td>
+		<td class="textcenter" ><?php echo displayFromTo($hope->hopePriceFrom, $hope->hopePriceTo, 1, '万円')?></td>
 		<td class="textcenter" ><?php echo displayFromTo($hope->hopeSquareFrom,$hope->hopeSquareTo, 1, '㎡');?></td>		
 		<td><?php echo $hope->hopeLine;?></td>
 		<td>

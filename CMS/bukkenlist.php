@@ -36,7 +36,6 @@
 		$searchInfo->publishFlg = $_POST['publishFlg'];		
 					
 		$_SESSION['searchObject'] = array($_POST['memberFlg'], $_POST['objectName'], $_POST['publishFlg']);	
-		echo ($searchInfo->memberFlg);
 		$objectList = searchBukken($searchInfo, "00");
 	}
 	function CleanNumber($num)
@@ -126,6 +125,7 @@
 
 <br>
 <?php if(isset($objectList)){?>
+<div class="pager">全<font color="red"><?php echo sizeof($objectList)?></font>件中：1-<?php echo sizeof($members)?>件目</div>
 <table  cellspacing="1" cellpadding="0" class="listTbl">
 	<tr>
 		<td colspan="9" id="tableHeader">登録情報検索結果</td>
