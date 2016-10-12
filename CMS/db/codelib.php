@@ -84,12 +84,12 @@ function MakeCodeMstCombo($code, $hasDefault, $val)
  */
 function MakeCodeMstRadio($code, $name, $val, $col)
 {
-
-	$codes = getCode($code);
-
+	$codes = getCode($code);	
+	
 	$index = 0;
 	foreach($codes as $row)
-	{
+	{		
+		
 		$index++;
 		$id = $name.$index;
 		print('<input type="radio" name="'.$name.'" id="'.$id.'" value="'.$row->number.'" '.($val == $row->number ? "checked" : "").

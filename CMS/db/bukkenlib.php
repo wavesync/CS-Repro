@@ -20,7 +20,7 @@ function getBukken($bukkenId){
  * @param unknown $searchInfo
  * @param unknown $flg
  */
-function searchBukken($searchInfo, $flg){
+function searchBukken($searchInfo){
 	$query = ORM::for_table("Bukken");
 	if(!isNull($searchInfo->memberFlg)){
 		$query = $query->where('memberFlg', $searchInfo->memberFlg);
@@ -31,6 +31,17 @@ function searchBukken($searchInfo, $flg){
 	if(!isNull($searchInfo->objectName)){
 		$query = $query->where_like('objectName', '%'.$searchInfo->objectName.'%');
 	}
+	
+	if(!isNull($searchInfo->address)){
+		$areas = explode(',', $searchInfo->address);
+		$con = array();
+		foreach($areas as $area){
+			$con[] = "address like '%".$area."%'";
+		}
+		$whereArea = '('.implode(' OR ', $con).')';
+		$query = $query->where_raw($whereArea);
+	}
+	
 	return $query->order_by_desc('updateDateTime')->order_by_asc('objectCode')->find_many();
 }
 

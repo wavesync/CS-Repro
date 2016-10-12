@@ -5164,7 +5164,7 @@ $(document).ready(function(){
 	<tr>
 		<th>駅徒歩</th>
 		<td>
-			<?php MakeCodeMstRadio('0024', 'hopeWalk', $hope->hopeWalk)?>
+			<?php MakeCodeMstRadio('0024', 'hopeWalk', $hope->hopeWalk, null)?>
 		</td>
 	</tr>
 	<tr>
@@ -5196,7 +5196,7 @@ $(document).ready(function(){
 	<tr>
 		<th>築年数</th>
 		<td>
-			<?php MakeCodeMstRadio('0025', 'hopeYear', $hope->hopeYear)?>
+			<?php MakeCodeMstRadio('0025', 'hopeYear', $hope->hopeYear, null)?>
 		</td>
 	</tr>
 	

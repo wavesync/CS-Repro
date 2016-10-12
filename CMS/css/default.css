@@ -55,7 +55,7 @@ ul{
 	/*padding: 5px 8px;*/
 	margin-top:10px;
 	border-bottom: 2px solid #796B67;
-	height: 60px;
+	height: 70px;
 	padding-bottom:2px;
 }
 
@@ -1231,3 +1231,25 @@ Mypage
 #mypage div.cont02 h4.ttl-h4-03 span label { font-weight: bold; }
 
 #mypage .ttl-h4-03{clear:both;}
+
+/*ソートテーブル*/
+table.tablesorter thead tr .tablesorter-header {
+	background-image: url(../images/global/bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+}
+table.tablesorter thead tr .tablesorter-headerAsc {
+	background-image: url(../images/global/asc.gif);
+}
+table.tablesorter thead tr .tablesorter-headerDesc {
+	background-image: url(../images/global/desc.gif);
+}
+table.tablesorter thead .sorter-false {
+	background-image: none !important;
+	/*background: url(../images/bg_dot.gif) !important;*/
+	cursor: default;
+}
+table.tablesorter thead tr .tablesorter-headerDesc, table.tablesorter thead tr .tablesorter-headerAsc {
+background-color: #dae0e4;
+}

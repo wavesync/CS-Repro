@@ -80,7 +80,7 @@ else if($_SERVER["REQUEST_METHOD"] == "POST")
 	<input type="hidden" name="act" id="hidAct"></input>
 	<input type="hidden" name="pid" id="hidPid"></input>
 	
-	<table class="dataTbl"> 		
+	<table class="dataTbl tablesorter" id="tablesorter"> 		
 		<tr>
 			<th style="width:15%">氏名</th>
 			<td><input type="text" name="memberName" size="12" style="ime-mode:active"></td>
@@ -90,7 +90,7 @@ else if($_SERVER["REQUEST_METHOD"] == "POST")
 		<tr>
 			<th>希望エリア</th>
 			<td colspan="3">
-				<?php MakeCodeMstMultiCheckbox('0028', 'hopeArea', $searchInfo->hopeArea, 6)?>
+				<?php MakeCodeMstMultiCheckbox('0028', 'hopeArea', $searchInfo->hopeArea, 6);?>
 			</td>
 		</tr>
 		
@@ -123,7 +123,7 @@ else if($_SERVER["REQUEST_METHOD"] == "POST")
 	<tr>
 		<th>築年数</th>
 		<td colspan="3">
-			<?php MakeCodeMstRadio('0025', 'hopeYear', $searchInfo->hopeYear)?>
+			<?php MakeCodeMstRadio('0025', 'hopeYear', $searchInfo->hopeYear, null);?>
 		</td>
 	</tr>
 		
@@ -139,29 +139,31 @@ else if($_SERVER["REQUEST_METHOD"] == "POST")
 
 </div>
 
-<?php if(sizeof($members) > 0){?>
+<?php if(isset($members) && sizeof($members) > 0){?>
 <div class="pager">全<font color="red"><?php echo sizeof($members)?></font>件中：1-<?php echo sizeof($members)?>件目</div>
 
 <table class="listTbl tablesorter" id="tablesorter">
 	<thead>
-	<tr>		
-		<th class="textcenter" >会員番号</th>
-		<th class="textcenter" >会員名</th>
-		<th class="textcenter" >電話番号</th>
-		<th class="textcenter" >メールアドレス</th>
-		<th class="textcenter" ></th>
-	</tr>	
-	<?php foreach($members as $member){ ?>
-	<tr>
-		<td><?php echo $member->memberNo?> </td>
-		<td><?php echo $member->memberName?></td>
-		<td><?php echo $member->tel;?></td>
-		<td><?php echo $member->email;?></td>
-		<td class="textcenter"><a href="memberdetail.php?pid=<?php echo $member->pid?>">編集</a></td>
-	</tr>
-	<?php }?>
+		<tr>		
+			<th class="textcenter" >会員番号</th>
+			<th class="textcenter" >会員名</th>
+			<th class="textcenter" >電話番号</th>
+			<th class="textcenter" >メールアドレス</th>
+			<th class="textcenter" ></th>
+		</tr>
 	</thead>
+	<tbody>	
+		<?php foreach($members as $member){ ?>
+		<tr>
+			<td><?php echo $member->memberNo?> </td>
+			<td><?php echo $member->memberName?></td>
+			<td><?php echo $member->tel;?></td>
+			<td><?php echo $member->email;?></td>
+			<td class="textcenter"><a href="memberdetail.php?pid=<?php echo $member->pid?>">編集</a></td>
+		</tr>
+		<?php }?>
 	
+	</tbody>
 </table>
 <?php }?>
 
@@ -194,4 +196,14 @@ function scrollSearchDiv(){
 	$('#searchDiv').slideToggle("slow");
 }
 
+</script>
+
+<script type="text/javascript" src="./js/jquery-latest.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="./js/jquery.tablesorter.js" charset="utf-8"></script>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#tablesorter").tablesorter({headers: {0:{sorter:true},1:{sorter:true},2:{sorter:false},3:{sorter:false},4:{sorter:false},5:{sorter:false}}, sortList:[[0,0]], widgets: ['zebra']});
+	});
+		
 </script>

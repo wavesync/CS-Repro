@@ -16,8 +16,9 @@
 			$searchInfo->memberFlg = $arr[0];
 			$searchInfo->objectName = $arr[1];	
 			$searchInfo->publishFlg = $arr[2];
-								
-			$objectList = searchBukken($searchInfo, "00");	
+			$searchInfo->address = $arr[3];
+			
+			$objectList = searchBukken($searchInfo);	
 			$isShowTableHeader = true;		
 		}		
 	} 
@@ -34,9 +35,15 @@
 		$searchInfo->memberFlg = $_POST['memberFlg'];
 		$searchInfo->objectName = $_POST['objectName'];
 		$searchInfo->publishFlg = $_POST['publishFlg'];		
-					
-		$_SESSION['searchObject'] = array($_POST['memberFlg'], $_POST['objectName'], $_POST['publishFlg']);	
-		$objectList = searchBukken($searchInfo, "00");
+		if(isset($_POST['address'])){
+			$searchInfo->address = implode(',', $_POST['address']);
+		}
+		else{
+			$searchInfo->address = null;
+		}
+		
+		$_SESSION['searchObject'] = array($_POST['memberFlg'], $_POST['objectName'], $_POST['publishFlg'], $searchInfo->address);	
+		$objectList = searchBukken($searchInfo);
 	}
 	function CleanNumber($num)
 	{
@@ -80,16 +87,23 @@
 	尚、<font color="#F67F05">登録済み情報を全件表示</font>する場合は、項目を選択せず、「検索」ボタンを押してください。
 	<?php }?>
 </div>
+
+<table class="dataTbl"> 
+	<tr>
+		<td id="tableHeader" style="border-right:none !important">検索</td>
+		<td id="tableHeader" style="border-left:none !important">
+			<a href="#" onclick="scrollSearchDiv()" style="float:right;padding-right:5px;"><img id="imgSwitch" src="images/global/south-mini.png"></a>
+		</td>
+	</tr>
+</table>
+
+<div id="searchDiv">
+
 <form id="frm" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 <input type="hidden" name="act" id="hidAct"></input>
 <input type="hidden" name="pid" id="hidPid"></input>
 	
 <table class="dataTbl"> 
-	<?php if($isShowTableHeader){?>
-	<tr>
-		<td colspan="5" id="tableHeader">再検索</td>
-	</tr>		
-	<?php }?>
 	<tr>
 		<th width="15%" >自社・他社</th>
 		<td colspan="3">
@@ -110,6 +124,14 @@
 			<input type=radio name="publishFlg" value="00" <?php if(isset($searchInfo) && $searchInfo->publishFlg == "00"){echo 'checked';}  ?>/>非公開 
 		</td> 
 	</tr>
+	
+	<tr>
+		<th>エリア</th>
+		<td colspan="3">
+			<?php MakeCodeMstMultiCheckbox('0028', 'address', $searchInfo->address, 6);?>
+		</td>
+	</tr>
+	
 </table> 
 <br>
 </form>
@@ -123,6 +145,8 @@
 		<img src="images/global/demobtn_clear.gif" alt="クリア" border="0" onclick="ClearCon()" ></a>
 </div>
 
+</div>
+
 <br>
 <?php if(isset($objectList)){?>
 <div class="pager">全<font color="red"><?php echo sizeof($objectList)?></font>件中：1-<?php echo sizeof($members)?>件目</div>
@@ -131,7 +155,7 @@
 		<td colspan="9" id="tableHeader">登録情報検索結果</td>
 	</tr>
 </table>
-<table  cellspacing="1" cellpadding="0" class="listTbl tablesorter" id="tablesorter">
+<table class="listTbl tablesorter" id="tablesorter">
 
 	<thead>
 	<tr>
@@ -147,6 +171,7 @@
 		<th class="textcenter" >価格</th>				
 	</tr>
 	</thead>
+	<tbody>
 	<?php foreach($objectList as $bukken){ ?>
 		<tr>
 			<td style="width:56px !important">
@@ -178,6 +203,7 @@
 			</td>						
 		</tr>
 	<?php }?>
+	</tbody>
 </table>
 <?php } ?>
 
@@ -188,7 +214,6 @@
 </div>
 <?php include 'footer.php'; ?>	
 
-<SCRIPT src="./js/jquery-latest.js"></SCRIPT>
 <script language="javascript">
 function DeleteItem(pid)
 {
@@ -206,22 +231,41 @@ function DeleteItem(pid)
 function ClearCon()
 {
 	$('#objectName').val('');
-	$("input[name^=objectKind]:checked").each(function () {
-		$(this).attr("checked", false);
+	$("input[name^=memberFlg]").each(function () {
+		if($(this).val() == '02'){
+			$(this).trigger('click');
+		}		
 	});
 
-	$("input[name=openFlg]").each(function () {
-		if($(this).val() != '') $(this).attr("checked", false);
-		else $(this).attr("checked", true);
+	$("input[name=publishFlg]").each(function () {
+		if($(this).val() == ''){
+			$(this).trigger('click');
+		}
 	});
+	
+	$("input[name^=address]:checked").each(function () {
+		$(this).removeAttr("checked");
+	});	
 }
+/**/
+function scrollSearchDiv(){
+	if($('#searchDiv').is(':visible')){
+		$('#imgSwitch').attr('src', 'images/global/north-mini.png');
+	}		
+	else {
+		$('#imgSwitch').attr('src', 'images/global/south-mini.png');
+	}
+	$('#searchDiv').slideToggle("slow");
+}
+
 </script>
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="./js/jquery-latest.min.js" charset="utf-8"></script>
 <script type="text/javascript" src="./js/jquery.tablesorter.js" charset="utf-8"></script>
 
 <script type="text/javascript">
-	$(function() {		
-		$("#tablesorter").tablesorter({headers: {0:{sorter:false},1:{sorter:false},2:{sorter:"digit"},3:{sorter:false},4:{sorter:false},5:{sorter:false},6:{sorter:false},7:{sorter:false},8:{sorter:false},9:{sorter:false}}, sortList:[[2,1]], widgets: ['zebra']});
-	});	
+	$(document).ready(function(){
+		$("#tablesorter").tablesorter({headers: {0:{sorter:false},1:{sorter:true},2:{sorter:true},3:{sorter:false},4:{sorter:false},5:{sorter:false},6:{sorter:'digit'},7:{sorter:'digit'}}, sortList:[[1,0]], widgets: ['zebra']});
+	});
+		
 </script>

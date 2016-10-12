@@ -53,7 +53,7 @@ include 'db/memberlib.php';
 			else if($action == 2)
 			{				
 				saveMember($info);
-				header('Location:memberlist.php?back');
+				header('Location:memberdetail.php?pid'.$info->pid);
 				exit;
 			}
 		}
