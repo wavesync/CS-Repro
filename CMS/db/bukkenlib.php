@@ -42,6 +42,25 @@ function searchBukken($searchInfo){
 		$query = $query->where_raw($whereArea);
 	}
 	
+	//専有面積
+	if(!isNull($searchInfo->senyuAreaFrom) && is_numeric($searchInfo->senyuAreaFrom)){
+		$query = $query->where_gte('senyuArea', $searchInfo->senyuAreaFrom);
+	}
+	if(!isNull($searchInfo->senyuAreaTo) && is_numeric($searchInfo->senyuAreaTo)){
+		$query = $query->where_lte('senyuArea', $searchInfo->senyuAreaTo);
+	}
+	
+	//専有面積
+	if(!isNull($searchInfo->priceFrom) && is_numeric($searchInfo->priceFrom)){
+		$query = $query->where_gte('price', $searchInfo->priceFrom * 10000);
+	}
+	if(!isNull($searchInfo->priceTo) && is_numeric($searchInfo->priceTo)){
+		$query = $query->where_lte('price', $searchInfo->priceTo*10000);
+	}
+	if(!isNull($searchInfo->madori)){
+		$query = $query->where_in('madori', explode(',', $searchInfo->madori));
+	}
+	
 	return $query->order_by_desc('updateDateTime')->order_by_asc('objectCode')->find_many();
 }
 
@@ -117,6 +136,20 @@ function isNull($val){
 
 function isInteger($input){
 	return(ctype_digit(strval($input)));
+}
+
+/**
+ * 万円単位で表示
+ * @param unknown $price
+ */
+function displayPrice($price){
+	$man = $price / 10000;
+	if($man >= 10000){
+		$odd = $man % 10000;
+		$oku = ($man - $odd)/10000;
+		return $oku.'億'.number_format($odd).'万円';
+	}
+	return number_format($man).'万円';
 }
 
 /**

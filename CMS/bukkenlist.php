@@ -17,6 +17,11 @@
 			$searchInfo->objectName = $arr[1];	
 			$searchInfo->publishFlg = $arr[2];
 			$searchInfo->address = $arr[3];
+			$searchInfo->senyuAreaFrom = $arr[4];
+			$searchInfo->senyuAreaTo = $arr[5];
+			$searchInfo->priceFrom = $arr[6];
+			$searchInfo->priceTo = $arr[7];
+			$searchInfo->madori = $arr[8];
 			
 			$objectList = searchBukken($searchInfo);	
 			$isShowTableHeader = true;		
@@ -42,7 +47,19 @@
 			$searchInfo->address = null;
 		}
 		
-		$_SESSION['searchObject'] = array($_POST['memberFlg'], $_POST['objectName'], $_POST['publishFlg'], $searchInfo->address);	
+		$searchInfo->senyuAreaFrom = $_POST['senyuAreaFrom'];
+		$searchInfo->senyuAreaTo = $_POST['senyuAreaTo'];
+		$searchInfo->priceFrom = $_POST['priceFrom'];
+		$searchInfo->priceTo = $_POST['priceTo'];
+		if(isset($_POST['madori'])){
+			$searchInfo->madori = implode(',', $_POST['madori']);
+		}
+		else{
+			$searchInfo->madori = null;
+		}
+		
+		$_SESSION['searchObject'] = array($_POST['memberFlg'], $_POST['objectName'], $_POST['publishFlg'], $searchInfo->address, 
+				$searchInfo->senyuAreaFrom, $searchInfo->senyuAreaTo, $searchInfo->priceFrom, $searchInfo->priceTo, $searchInfo->madori);	
 		$objectList = searchBukken($searchInfo);
 	}
 	function CleanNumber($num)
@@ -106,16 +123,10 @@
 <table class="dataTbl"> 
 	<tr>
 		<th width="15%" >自社・他社</th>
-		<td colspan="3">
+		<td>
 			<input type="radio" name="memberFlg" value="00" <?php if($searchInfo->memberFlg == "00"){echo 'checked';}?> />自社
 			<input type="radio" name="memberFlg" value="01" <?php if($searchInfo->memberFlg == "01"){echo 'checked';}  ?>/>他社
 			<input type=radio name="memberFlg" value="02" <?php if($searchInfo->memberFlg == "02"){echo 'checked';}  ?>/>東日本レインズ
-		</td>
-	</tr>
-	<tr>
-		<th>建物名</th>
-		<td width="35%" >
-			<input type="text" name="objectName" id="objectName" size="55" style="ime-mode:active" value="<?php echo $searchInfo->objectName ?>" /> 
 		</td>
 		<th nowrap width="15%" >ネット公開</th> 
 		<td nowrap> 
@@ -124,13 +135,35 @@
 			<input type=radio name="publishFlg" value="00" <?php if(isset($searchInfo) && $searchInfo->publishFlg == "00"){echo 'checked';}  ?>/>非公開 
 		</td> 
 	</tr>
-	
+	<tr>
+		<th>建物名</th>
+		<td colspan="3">
+			<input type="text" name="objectName" id="objectName" size="50" style="ime-mode:active" value="<?php echo $searchInfo->objectName ?>" /> 
+		</td>
+	</tr>
 	<tr>
 		<th>エリア</th>
 		<td colspan="3">
 			<?php MakeCodeMstMultiCheckbox('0028', 'address', $searchInfo->address, 6);?>
 		</td>
 	</tr>
+	<tr>
+		<th>専有面積</th>
+		<td>
+			<input type="text" name="senyuAreaFrom" maxlength="6" style="ime-mode:disable;width:80px;text-align: right" value="<?php echo $searchInfo->senyuAreaFrom ?>">&nbsp;㎡～
+			<input type="text" name="senyuAreaTo" maxlength="6" style="ime-mode:disable;width:80px;text-align: right" value="<?php echo $searchInfo->senyuAreaTo ?>">&nbsp;㎡
+		</td>
+		<th>物件価格</th>
+		<td>
+			<input type="text" name="priceFrom" maxlength="6" style="ime-mode:disable;width:120px;text-align: right" value="<?php echo $searchInfo->priceFrom ?>">&nbsp;万円～
+			<input type="text" name="priceTo" maxlength="6" style="ime-mode:disable;width:120px;text-align: right" value="<?php echo $searchInfo->priceTo ?>">&nbsp;万円
+		</td>
+	</tr>
+	<tr>
+		<th>間取り</th>
+		<td colspan="3"><?php MakeCodeMstMultiCheckbox('0015', 'madori', $searchInfo->madori, 10);?></td>
+	</tr>
+	
 	
 </table> 
 <br>
@@ -162,12 +195,13 @@
 		<th class="textcenter" style="width:56px !important">
 		詳細・<br/>削除
 		</th>
-		<th class="textcenter" >建物番号</th>		
+		<th class="textcenter" style="width:80px !important">建物番号</th>		
+		<th class="textcenter" style="width:120px !important">レインズ物件番号</th>
 		<th class="textcenter">建物名</th>
 		<th class="textcenter" >路線<br>駅</th>
 		<th class="textcenter" >所在地</th>
-		<th class="textcenter" >間取<br>階数</th>
-		<th class="textcenter" >専有面積</th>
+		<th class="textcenter" style="width:50px !important" >間取<br>階数</th>
+		<th class="textcenter" style="width:80px !important" >専有面積</th>
 		<th class="textcenter" >価格</th>				
 	</tr>
 	</thead>
@@ -183,6 +217,7 @@
 				</a>
 			</td>
 			<td class="textcenter"><?php echo $bukken->objectCode ?></td>
+			<td class="textcenter"><?php echo $bukken->objectCodeReins ?></td>
 			<td><?php echo $bukken->objectName ?></td>
 			<td>
 				<?php echo $bukken->route1Name ?><br>
@@ -195,11 +230,7 @@
 			</td>
 			<td class="textcenter"><?php if($bukken->senyuArea !== null && $bukken->senyuArea !== '') {echo CleanNumber($bukken->senyuArea).'㎡';} ?></td>
 			<td class="textcenter" nowrap>
-				<?php 
-					if($bukken->price !== null && $bukken->price !== '')
-					{echo $bukken->price;}
-					else{ echo '－'; } 
-				?> 
+				<?php echo displayPrice($bukken->price)?> 
 			</td>						
 		</tr>
 	<?php }?>
@@ -265,7 +296,7 @@ function scrollSearchDiv(){
 
 <script type="text/javascript">
 	$(document).ready(function(){
-		$("#tablesorter").tablesorter({headers: {0:{sorter:false},1:{sorter:true},2:{sorter:true},3:{sorter:false},4:{sorter:false},5:{sorter:false},6:{sorter:'digit'},7:{sorter:'digit'}}, sortList:[[1,0]], widgets: ['zebra']});
+		$("#tablesorter").tablesorter({headers: {0:{sorter:false},1:{sorter:true},2:{sorter:true},3:{sorter:true},4:{sorter:false},5:{sorter:false},6:{sorter:false},7:{sorter:'digit'},8:{sorter:'digit'}}, sortList:[[1,0]], widgets: ['zebra']});
 	});
 		
 </script>

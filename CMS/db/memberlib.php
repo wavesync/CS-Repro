@@ -110,6 +110,20 @@ function showDate($date, $fm){
 }
 
 /**
+ * 万円単位で表示
+ * @param unknown $price
+ */
+function displayPrice($price){
+	$man = $price / 10000;
+	if($man >= 10000){
+		$odd = $man % 10000;
+		$oku = ($man - $odd)/10000;
+		return $oku.'億'.number_format($odd).'万円';
+	}
+	return number_format($man).'万円';
+}
+
+/**
  * POSTから会員情報取得
  * @param unknown $job
  */

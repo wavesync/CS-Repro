@@ -5,7 +5,8 @@
  * @param unknown $code
  */
 function getCode($code){
-	return ORM::for_table('CodeMst')->where('code',$code)->order_by_asc('displayOrder')->find_many();
+	return ORM::for_table('CodeMst')->where(array('code'=>$code, 'deleteFlg'=>'00'))
+									->order_by_asc('displayOrder')->find_many();
 }
 
 /*
@@ -114,6 +115,8 @@ function MakeCodeMstMultiCheckbox($code, $name, $val, $col)
 	$codes = getCode($code);
 	$vals = explode(',', $val);
 	$index = 0;
+	$class = 'inblock';
+	if($col != 6) $class = 'inblock2';
 	foreach($codes as $row)
 	{
 		$check = in_array($row->number, $vals);		
@@ -121,7 +124,7 @@ function MakeCodeMstMultiCheckbox($code, $name, $val, $col)
 		$index++;
 		$id = $name.$index;
 		print('<input type="checkbox" name="'.$name.'[]" id="'.$id.'" value="'.$row->number.'" '.($check ? "checked" : "").
-				'><label for="'.$id.'" '.(isset($col) ? ' class="inblock"' : '').'>'.$row->title.'</label>');
+				'><label for="'.$id.'" '.(isset($col) ? ' class="'.$class.'"' : '').'>'.$row->title.'</label>');
 		if(isset($col) && $index % $col == 0){
 			print('<br>');
 		}

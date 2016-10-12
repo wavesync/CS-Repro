@@ -284,7 +284,7 @@ include 'db/memberlib.php';
 		<td class="textcenter" ><a href="bukkendetail.php?pid=<?php echo $bk->pid?>" target="_blank"><?php echo $bk->objectCode?></a></td>
 		<td><?php echo $bk->objectName?></td>
 		<td><?php echo $bk->address?></td>
-		<td class="textcenter" ><?php echo ($bk->price/10000).'万円'?></td>
+		<td class="textcenter" ><?php echo displayPrice($bk->price)?></td>
 	</tr>
 	<?php }?>	
 	</table>
