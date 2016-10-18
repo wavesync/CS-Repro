@@ -117,9 +117,9 @@
 	<tr>
 		<th colspan="2">自社・他社</th>
 		<td>
-			<input type="radio"  name="memberFlg" value="00" <?php if($bukken->memberFlg == "00"){echo 'checked';}?> />自社
-			<input type="radio"  name="memberFlg" value="01" <?php if($bukken->memberFlg == "01"){echo 'checked';}  ?>/>他社
 			<input type=radio  name="memberFlg" value="02" <?php if($bukken->memberFlg == "02"){echo 'checked';}  ?>/>東日本レインズ
+			<input type="radio"  name="memberFlg" value="00" <?php if($bukken->memberFlg == "00"){echo 'checked';}?> />自社
+			<input type="radio"  name="memberFlg" value="01" <?php if($bukken->memberFlg == "01"){echo 'checked';}  ?>/>他社			
 		</td>
 		<th>レインズ物件番号</th>
 		<td><input type="text" name="objectCodeReins" readonly="readonly" maxlength="30" size="40" value="<?php echo $bukken->objectCodeReins ?>" /> </td>
@@ -213,9 +213,9 @@
 				<?php 					
 					MakeComboJiki(true, $bukken->jiki);
 				?>
-			</select>
-			<input type="text" name="jikiMonth" id="txtJikiMonth" style="ime-mode:active" maxlength="10" size="20" value="<?php echo $bukken->jikiMonth ?>" />
-			<input type="text" name="nyuKyoDay" id="txtNyuKyoDay" style="ime-mode:active" maxlength="10" size="20" value="<?php echo $bukken->nyuKyoDay ?>" />
+			</select>&nbsp;&nbsp;&nbsp;
+			引渡年月<input type="text" name="jikiMonth" id="txtJikiMonth" style="ime-mode:active" maxlength="10" size="20" value="<?php echo $bukken->jikiMonth ?>" />&nbsp;&nbsp;&nbsp;&nbsp;
+			入居年月<input type="text" name="nyuKyoDay" id="txtNyuKyoDay" style="ime-mode:active" maxlength="10" size="20" value="<?php echo $bukken->nyuKyoDay ?>" />
 		</td>
 	</tr>	
 <!-- 	
@@ -341,11 +341,11 @@
 		<td>	
 			<input type="text" name="roomNo" style="ime-mode:active" id="txtRoomNo" maxlength="20" size="35" value="<?php echo $bukken->roomNo ?>" />		
 		</td>
-		<th>方位・間取</th>
-		<td>					
-			間取<select name="madori" id="lstMadori" >	
-					<?php MakeComboMadori(true, $bukken->madori);?> 
-				</select>			
+		<th>間取</th>
+		<td>
+			<select name="madori" id="lstMadori" >	
+				<?php MakeComboMadori(true, $bukken->madori);?> 
+			</select>			
 		</td>
 	</tr>
 <!-- 建物 -->
@@ -509,7 +509,7 @@
     <?php }?>
     
     <!-- マップブロック -->
-    <tr>
+    <tr style="display:none">
 		<th rowspan="2" id="crossRow">地<br/>図<br/>情<br/>報</th>
 		<th>GoogleMap</th>
 		<td colspan="3">
@@ -528,7 +528,7 @@
 				
 		</td>
 	</tr>
-	<tr>
+	<tr style="display:none">
 		<td colspan="4">
 			<span id="googlemap_image">
 			</span>

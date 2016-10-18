@@ -5,9 +5,17 @@ include 'db/memberlib.php';
 
 ?>
 <script src="js/tab.js"></script>
-<br/>
+<div id="hd2">
+	<h1>
+		<a href="menu.php" id="menuTopLink" onmouseover="Focus(this)" onmouseout="LostFocus(this)" >
+			管理メニュートップ</a>≫
+		<a href="memberlist.php" id="menuTopLink" onmouseover="Focus(this)" onmouseout="LostFocus(this)" >
+			&nbsp;【会員情報】新規登録・登録情報検索 </a>≫
+	<font style="font-weight: 800">&nbsp;会員情報詳細</font></h1>
+	
+</div>
 <div id="pageTitle">
-会員情報≫ 会員情報詳細
+ 会員情報詳細
 </div>
 <br/>
 <?php
@@ -53,7 +61,7 @@ include 'db/memberlib.php';
 			else if($action == 2)
 			{				
 				saveMember($info);
-				header('Location:memberdetail.php?pid'.$info->pid);
+				header('Location:memberdetail.php?pid='.$info->pid);
 				exit;
 			}
 		}
@@ -83,7 +91,7 @@ include 'db/memberlib.php';
 <input type="hidden" name="action" value="<?php echo $action ?>" id="action">
 <table class="dataTbl">
 	<tr>
-		<th width="15%" >コード</th>
+		<th width="15%" >会員番号</th>
 		<td colspan="3">			
 			<input type="text" name="memberNo"  readonly="readonly" style="width:150px" value="<?php echo $info->memberNo; ?>"  /> 			
 		</td>
@@ -173,6 +181,19 @@ include 'db/memberlib.php';
 		</td>
 	</tr>
 	<tr>
+		<th>ご予算(<span class="hissu">*</span>)</th>
+		<td colspan="3">
+			<select name="priceFrom" id="lstPriceFrom" >
+				<option value="">下限なし</option>
+				<?php MakeCodeMstCombo('0027', false, $info->priceFrom)?>
+			</select>&nbsp;～
+			<select name="priceTo" id="lstPriceTo" >
+				<?php MakeCodeMstCombo('0027', false, $info->priceTo)?>
+				<option value="" <?php if(isNull($info->priceTo) || $info->priceTo == 0) echo 'selected="selected"' ?>>上限なし</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
 		<th>ご年収</th>
 		<td>
 			<select name="income" id="lstIncome" >	
@@ -216,7 +237,7 @@ include 'db/memberlib.php';
 
 <ul id="tablist">
 <li><a href="#" class="current" onClick="return expandcontent('sc1', this)" theme="#EAEAFF">希望一覧</a></li>
-<li><a href="#" onClick="return expandcontent('sc2', this)" theme="#EAEAFF">物件一覧</a></li>
+<li><a href="#" onClick="return expandcontent('sc2', this)" theme="#EAEAFF">お気に入り物件</a></li>
 </ul>
 
 <DIV id="tabcontentcontainer">

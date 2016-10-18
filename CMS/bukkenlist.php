@@ -6,6 +6,7 @@
 
 	$isShowTableHeader = false;	
 	$searchInfo = getBukken(null);	
+	$searchInfo->memberFlg = '02';
 	
 	
 	if($_SERVER["REQUEST_METHOD"] == "GET")
@@ -82,20 +83,20 @@
 		<a href="menu.php" id="menuTopLink" onmouseover="Focus(this)" onmouseout="LostFocus(this)" >
 			管理メニュートップ</a>≫		
 		<?php if($isShowTableHeader){?>
-		<font style="font-weight: 800">&nbsp;【売買物件】登録情報検索結果一覧</font>
+		<font style="font-weight: 800">&nbsp;物件情報検索結果一覧</font>
 		<?php }else{?>
-		<font style="font-weight: 800">&nbsp;【売買物件】新規登録・登録情報検索</font>
+		<font style="font-weight: 800">&nbsp;物件情報検索</font>
 		<?php }?>
 	</h1>
 </div>
 <div id="pageTitle">
 	<?php if($isShowTableHeader){?>
-	【売買物件】登録情報検索結果一覧
+	物件情報検索結果一覧
 	<?php }else{?>
-	【売買物件】新規登録・登録情報検索
+	物件情報検索
 	<?php }?>
 </div>
-<div id="pageDiscription">
+<div id="pageDiscription" style="display:none">
 	<?php if($isShowTableHeader){?>
 	登録物件の検索結果です。再検索される場合は該当項目を選択し「検索」ボタンを押してください。<br/>
 	新規登録の場合は「新規登録」ボタンを押してください。
@@ -104,7 +105,7 @@
 	尚、<font color="#F67F05">登録済み情報を全件表示</font>する場合は、項目を選択せず、「検索」ボタンを押してください。
 	<?php }?>
 </div>
-
+<br>
 <table class="dataTbl"> 
 	<tr>
 		<td id="tableHeader" style="border-right:none !important">検索</td>
@@ -124,9 +125,9 @@
 	<tr>
 		<th width="15%" >自社・他社</th>
 		<td>
-			<input type="radio" name="memberFlg" value="00" <?php if($searchInfo->memberFlg == "00"){echo 'checked';}?> />自社
-			<input type="radio" name="memberFlg" value="01" <?php if($searchInfo->memberFlg == "01"){echo 'checked';}  ?>/>他社
 			<input type=radio name="memberFlg" value="02" <?php if($searchInfo->memberFlg == "02"){echo 'checked';}  ?>/>東日本レインズ
+			<input type="radio" name="memberFlg" value="00" <?php if($searchInfo->memberFlg == "00"){echo 'checked';}?> />自社
+			<input type="radio" name="memberFlg" value="01" <?php if($searchInfo->memberFlg == "01"){echo 'checked';}  ?>/>他社			
 		</td>
 		<th nowrap width="15%" >ネット公開</th> 
 		<td nowrap> 
@@ -261,7 +262,10 @@ function DeleteItem(pid)
 }
 function ClearCon()
 {
-	$('#objectName').val('');
+	//$('#objectName').val('');
+	$('input[type=text]').each(function(){
+		$(this).val('');
+	});
 	$("input[name^=memberFlg]").each(function () {
 		if($(this).val() == '02'){
 			$(this).trigger('click');
@@ -274,7 +278,7 @@ function ClearCon()
 		}
 	});
 	
-	$("input[name^=address]:checked").each(function () {
+	$("input[type=checkbox]:checked").each(function () {
 		$(this).removeAttr("checked");
 	});	
 }

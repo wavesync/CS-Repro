@@ -49,6 +49,7 @@ function searchMember($searchInfo){
 				->distinct()->select('mb.pid,mb.memberNo, mb.memberName, mb.tel,mb.email')
 				->join('HopeInfo', 'mb.pid = hope.memberInfoPid', 'hope');
 
+	if(!isNull($searchInfo->memberNo)) $query = $query->where('memberNo', $searchInfo->memberNo);
 	if(!isNull($searchInfo->memberName)) $query = $query->where_like('memberName', '%'.$searchInfo->memberName.'%');
 	if(!isNull($searchInfo->tel)) $query = $query->where_like('tel', '%'.$searchInfo->tel.'%');
 	if(!isNull($searchInfo->hopeArea)){
@@ -129,7 +130,7 @@ function displayPrice($price){
  */
 function bindMember($member){
 	$columns = array('memberNo','memberName','memberNameKana','zipCode','address1','address2','address3','address4','address5','tel','fax','email',
-					 'connectMethod','connectTime','family','age','income','ownMoney','password','registerFlg','note');
+					 'connectMethod','connectTime','family','age','income','priceFrom','priceTo','ownMoney','password','registerFlg','note');
 	foreach($_POST as $key => $value){
 		if($key == 'pid') continue;
 		if(!in_array($key, $columns)) continue;
@@ -155,6 +156,7 @@ function validMember($member){
 	if(isNull($member->password)) $error[] = '<li>パスワードは必須です。</li>';
 	if(isNull($member->connectMethod)) $error[] = '<li>当社からの連絡方法は必須です。</li>';
 	if(isNull($member->connectTime)) $error[] = '<li>連絡希望時間は必須です。</li>';
+	if(isNull($member->priceFrom) && isNull($member->priceTo)) $error[] = '<li>ご予算は必須です。</li>';
 	return implode('<br>', $error);
 }
 
@@ -276,7 +278,7 @@ function bindHope($hope){
 function validateHope($hope){
 	$error = array();
 	if(isNull($hope->hopeArea) && isNull($hope->hopeLine)) $error[] = '<li>希望エリアもしく希望路線は必須です。</li>';
-	if(isNull($hope->hopePriceFrom) && isNull($hope->hopePriceTo)) $error[] = '<li>予算は必須です。</li>';
+	//if(isNull($hope->hopePriceFrom) && isNull($hope->hopePriceTo)) $error[] = '<li>予算は必須です。</li>';
 	return implode('<br>', $error);
 }
 

@@ -62,7 +62,7 @@ else if($_SERVER["REQUEST_METHOD"] == "POST")
 <head>
 <META http-equiv="Content-Type" content="text/html; charset=utf-8">
 <META http-equiv="Content-Style-Type" content="text/css">
-<title>郵便番号検索</title>
+<title>希望情報</title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
@@ -120,7 +120,7 @@ $(document).ready(function(){
 <div id="content" style="width:1400px !important">
 <br>
 <div id="pageTitle" style="text-align:left">
-	会員情報≫ 会員情報詳細
+	希望情報≫ 希望情報詳細
 </div>
 <div align="center"> 
 	<a href="javascript:window.close()"><img src="images/global/demobtn_list.gif" alt="一覧へ" border="0" ></a>
@@ -5168,7 +5168,7 @@ $(document).ready(function(){
 		</td>
 	</tr>
 	<tr>
-		<th>ご予算&nbsp;(<span class="hissu">*</span>)</th>
+		<th>価格帯&nbsp;</th>
 		<td>
 			<select name="hopePriceFrom" id="lstHopePriceFrom" >
 				<option value="">下限なし</option>

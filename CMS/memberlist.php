@@ -11,14 +11,15 @@ if($_SERVER["REQUEST_METHOD"] == "GET")
 	if(isset($_SESSION['searchMember']))
 	{
 		$arr = $_SESSION['searchMember'];
-		$searchInfo->memberName = $arr[0];
-		$searchInfo->tel = $arr[1];
-		$searchInfo->hopeArea = $arr[2];
-		$searchInfo->hopePriceFrom = $arr[3];
-		$searchInfo->hopePriceTo = $arr[4];
-		$searchInfo->hopeSquareFrom = $arr[5];
-		$searchInfo->hopeSquareTo = $arr[6];
-		$searchInfo->hopeYear = $arr[7];
+		$searchInfo->memberNo = $arr[0];
+		$searchInfo->memberName = $arr[1];
+		$searchInfo->tel = $arr[2];
+		$searchInfo->hopeArea = $arr[3];
+		$searchInfo->hopePriceFrom = $arr[4];
+		$searchInfo->hopePriceTo = $arr[5];
+		$searchInfo->hopeSquareFrom = $arr[6];
+		$searchInfo->hopeSquareTo = $arr[7];
+		$searchInfo->hopeYear = $arr[8];
 
 		$members = searchMember($searchInfo);
 	}
@@ -32,6 +33,7 @@ else if($_SERVER["REQUEST_METHOD"] == "POST")
 // 		DeleteAllBukken($_POST['pid']);
 // 	}
 	#削除
+	$searchInfo->memberNo = $_POST['memberNo'];
 	$searchInfo->memberName = $_POST['memberName'];
 	$searchInfo->tel = $_POST['tel'];
 	if(isset($_POST['hopeArea'])){
@@ -46,7 +48,7 @@ else if($_SERVER["REQUEST_METHOD"] == "POST")
 	$searchInfo->hopeSquareTo = $_POST['hopeSquareTo'];
 	$searchInfo->hopeYear = $_POST['hopeYear'];
 		
-	$_SESSION['searchMember'] = array($_POST['memberName'], $_POST['tel'], $searchInfo->hopeArea, $_POST['hopePriceFrom'], $_POST['hopePriceTo'],
+	$_SESSION['searchMember'] = array($_POST['memberNo'], $_POST['memberName'], $_POST['tel'], $searchInfo->hopeArea, $_POST['hopePriceFrom'], $_POST['hopePriceTo'],
 			$_POST['hopeSquareFrom'], $_POST['hopeSquareTo'],$_POST['hopeYear']);
 	$members = searchMember($searchInfo);
 }
@@ -58,11 +60,11 @@ else if($_SERVER["REQUEST_METHOD"] == "POST")
 	<h1>		
 		<a href="menu.php" id="menuTopLink" onmouseover="Focus(this)" onmouseout="LostFocus(this)" >
 			管理メニュートップ</a>≫
-		<font style="font-weight: 800">&nbsp;会員一覧</font>
+		<font style="font-weight: 800">&nbsp;会員情報検索結果一覧</font>
 		
 	</h1>
 </div>
-<div id="pageTitle">会員情報 ≫一覧</div>
+<div id="pageTitle">会員情報検索結果一覧</div>
 
 <br>
 
@@ -82,21 +84,24 @@ else if($_SERVER["REQUEST_METHOD"] == "POST")
 	
 	<table class="dataTbl tablesorter" id="tablesorter"> 		
 		<tr>
+			<th colspan="2" style="width:15%">会員番号</th>
+			<td><input type="text" name="memberNo" size="12" style="ime-mode:active"></td>
 			<th style="width:15%">氏名</th>
 			<td><input type="text" name="memberName" size="12" style="ime-mode:active"></td>
 			<th style="width:15%">電話番号</th>
 			<td><input type="text" name="tel" size="12" style="ime-mode:disable"></td>
 		</tr>
 		<tr>
+			<th rowspan="4" style="width:15px;text-align: center;border-right: 1px solid #CCC;">希<br>望<br>条<br>件</th>
 			<th>希望エリア</th>
-			<td colspan="3">
+			<td colspan="5">
 				<?php MakeCodeMstMultiCheckbox('0028', 'hopeArea', $searchInfo->hopeArea, 6);?>
 			</td>
 		</tr>
 		
 		<tr>
-			<th>ご予算</th>
-		<td colspan="3">
+			<th>価格帯</th>
+		<td colspan="5">
 			<select name="hopePriceFrom" id="lstHopePriceFrom" >
 				<option value="">下限なし</option>
 				<?php MakeCodeMstCombo('0027', false, $searchInfo->hopePriceFrom)?>
@@ -108,8 +113,8 @@ else if($_SERVER["REQUEST_METHOD"] == "POST")
 		</td>
 	</tr>
 	<tr>
-		<th>専有面積</th>
-		<td colspan="3">
+		<th style="border-bottom: 1px solid #CCC;">専有面積</th>
+		<td colspan="5" style="border-bottom: 1px solid #CCC;">
 			<select name="hopeSquareFrom" id="lstHopeSquareFrom" >
 				<option value="">下限なし</option>
 				<?php MakeCodeMstCombo('0026', false, $searchInfo->hopeSquareFrom)?>
@@ -120,9 +125,9 @@ else if($_SERVER["REQUEST_METHOD"] == "POST")
 			</select>
 		</td>
 	</tr>
-	<tr>
+	<tr style="display:none">
 		<th>築年数</th>
-		<td colspan="3">
+		<td colspan="5">
 			<?php MakeCodeMstRadio('0025', 'hopeYear', $searchInfo->hopeYear, null);?>
 		</td>
 	</tr>
