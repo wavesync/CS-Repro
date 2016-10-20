@@ -1817,6 +1817,7 @@
          */
         protected function _run() {
             $query = $this->_build_select();
+
             $caching_enabled = self::$_config[$this->_connection_name]['caching'];
 
             if ($caching_enabled) {

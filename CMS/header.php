@@ -46,6 +46,6 @@
 					</tr>
 				</table>						
 			</div>		
-			<img src="images/global/logo.gif" alt="会社ロゴ" style="z-index: 3" />			
+			<img src="images/global/logo.gif" alt="会社ロゴ" style="z-index: 3" height="60" />			
 		</div>
 		

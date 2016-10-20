@@ -1149,6 +1149,23 @@ ul#headerNaviMaster li a.select,ul#headerNaviMaster li a:hover{
 	text-align: right;
 	padding-right:10px;
 	padding-top:5px;
+	width:200px;
+	float:right;
+}
+.pagesize{
+	padding-left:10px;
+	padding-bottom:10px;
+	font-size:14px;
+	font-weight:800;
+	padding-top:5px;
+	width:500px;
+	float:left
+}
+.pagesize a{
+	text-decoration: none;
+}
+.pageselected {
+    color: #FF0000;
 }
 /*ページャー*/
 

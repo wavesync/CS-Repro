@@ -15,7 +15,7 @@
 		<div id="headerstaff" style="padding-top:30px">
 			<span id="headerstaff2"></span>
 		</div>
-		<img src="images/global/logo.gif" alt="会社ロゴ" />
+		<img src="images/global/logo.gif" alt="会社ロゴ" height="60" />
 	</div>
 
 	<br/><br/><br/><br/><br/>

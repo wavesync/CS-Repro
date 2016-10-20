@@ -20,48 +20,112 @@ function getBukken($bukkenId){
  * @param unknown $searchInfo
  * @param unknown $flg
  */
-function searchBukken($searchInfo){
+function searchBukken($searchInfo, &$countItem){
 	$query = ORM::for_table("Bukken");
-	if(!isNull($searchInfo->memberFlg)){
-		$query = $query->where('memberFlg', $searchInfo->memberFlg);
-	}
-	if(!isNull($searchInfo->publishFlg)){
-		$query = $query->where('publishFlg', $searchInfo->publishFlg);
-	}
-	if(!isNull($searchInfo->objectName)){
-		$query = $query->where_like('objectName', '%'.$searchInfo->objectName.'%');
-	}
 	
+	$where = ' WHERE 1 = 1';
+	
+	if(!isNull($searchInfo->memberFlg)) $where .= " AND memberFlg = '$searchInfo->memberFlg' ";
+	if(!isNull($searchInfo->publishFlg)) $where .= " AND publishFlg = '$searchInfo->publishFlg' ";
+	if(!isNull($searchInfo->objectName)) $where .= " AND objectName LIKE '%$searchInfo->objectName%' ";
+
 	if(!isNull($searchInfo->address)){
 		$areas = explode(',', $searchInfo->address);
 		$con = array();
 		foreach($areas as $area){
 			$con[] = "address like '%".$area."%'";
 		}
-		$whereArea = '('.implode(' OR ', $con).')';
-		$query = $query->where_raw($whereArea);
+		$whereArea = ' AND ('.implode(' OR ', $con).')';
+		$where .= $whereArea;
 	}
 	
 	//専有面積
 	if(!isNull($searchInfo->senyuAreaFrom) && is_numeric($searchInfo->senyuAreaFrom)){
-		$query = $query->where_gte('senyuArea', $searchInfo->senyuAreaFrom);
+		$where .= ' AND senyuArea >= '.$searchInfo->senyuAreaFrom;
 	}
 	if(!isNull($searchInfo->senyuAreaTo) && is_numeric($searchInfo->senyuAreaTo)){
-		$query = $query->where_lte('senyuArea', $searchInfo->senyuAreaTo);
+		$where .= ' AND senyuArea <= '.$searchInfo->senyuAreaTo;		
 	}
 	
 	//専有面積
 	if(!isNull($searchInfo->priceFrom) && is_numeric($searchInfo->priceFrom)){
-		$query = $query->where_gte('price', $searchInfo->priceFrom * 10000);
+		$pr = $searchInfo->priceFrom * 10000;
+		$where .= ' AND price >= '.$pr;
 	}
 	if(!isNull($searchInfo->priceTo) && is_numeric($searchInfo->priceTo)){
-		$query = $query->where_lte('price', $searchInfo->priceTo*10000);
-	}
-	if(!isNull($searchInfo->madori)){
-		$query = $query->where_in('madori', explode(',', $searchInfo->madori));
+		$pt = $searchInfo->priceTo*10000;
+		$where .= ' AND price <= '.$pt;		
 	}
 	
-	return $query->order_by_desc('updateDateTime')->order_by_asc('objectCode')->find_many();
+	if(!isNull($searchInfo->madori)){
+		$madories = explode(',', $searchInfo->madori);
+		$md = implode("','", $madories);
+		$where .= " AND madori IN ('$md')";		
+	}
+	
+	$count = ORM::for_table('Bukken')->raw_query('SELECT COUNT(*) as pid FROM Bukken '.$where)->find_one();
+	$countItem = $count->pid;
+	
+	if(!isset($searchInfo->sortField) || $searchInfo->sortField == '') $searchInfo->sortField = 'objectCode';
+	if(!isset($searchInfo->sortOrder) || $searchInfo->sortOrder == '') $searchInfo->sortOrder = 'ASC';
+	
+	$order = 'ORDER BY '.$searchInfo->sortField.' '.$searchInfo->sortOrder;
+	$select = 'SELECT ROW_NUMBER() OVER('.$order.') rowNum, * FROM Bukken '.$where;
+
+	$start = $searchInfo->pageSize*($searchInfo->pageIndex - 1) + 1;
+	$end = $start + $searchInfo->pageSize;
+	
+	$select = 'SELECT pid, objectCode, objectName, objectCodeReins, route1Name 
+					  station1Name, address, madori, syozaiKai, senyuArea, price		
+			   FROM ('.$select.') t WHERE rowNum BETWEEN '.$start.' AND '.$end;
+
+	return ORM::for_table('Bukken')->raw_query($select)->find_many();
+	//検索
+	
+// 	if(!isNull($searchInfo->memberFlg)){
+// 		$query = $query->where('memberFlg', $searchInfo->memberFlg);
+// 	}
+// 	if(!isNull($searchInfo->publishFlg)){
+// 		$query = $query->where('publishFlg', $searchInfo->publishFlg);
+// 	}
+// 	if(!isNull($searchInfo->objectName)){
+// 		$query = $query->where_like('objectName', '%'.$searchInfo->objectName.'%');
+// 	}
+	
+// 	if(!isNull($searchInfo->address)){
+// 		$areas = explode(',', $searchInfo->address);
+// 		$con = array();
+// 		foreach($areas as $area){
+// 			$con[] = "address like '%".$area."%'";
+// 		}
+// 		$whereArea = '('.implode(' OR ', $con).')';
+// 		$query = $query->where_raw($whereArea);
+// 	}
+	
+// 	//専有面積
+// 	if(!isNull($searchInfo->senyuAreaFrom) && is_numeric($searchInfo->senyuAreaFrom)){
+// 		$query = $query->where_gte('senyuArea', $searchInfo->senyuAreaFrom);
+// 	}
+// 	if(!isNull($searchInfo->senyuAreaTo) && is_numeric($searchInfo->senyuAreaTo)){
+// 		$query = $query->where_lte('senyuArea', $searchInfo->senyuAreaTo);
+// 	}
+	
+// 	//専有面積
+// 	if(!isNull($searchInfo->priceFrom) && is_numeric($searchInfo->priceFrom)){
+// 		$query = $query->where_gte('price', $searchInfo->priceFrom * 10000);
+// 	}
+// 	if(!isNull($searchInfo->priceTo) && is_numeric($searchInfo->priceTo)){
+// 		$query = $query->where_lte('price', $searchInfo->priceTo*10000);
+// 	}
+// 	if(!isNull($searchInfo->madori)){
+// 		$query = $query->where_in('madori', explode(',', $searchInfo->madori));
+// 	}
+	
+// 	$countQuery = clone $query;
+// 	$countItem = $countQuery->count();
+	
+// 	$offset = $searchInfo->pageSize*($searchInfo->pageIndex - 1);	
+// 	return $query->order_by_desc('updateDateTime')->order_by_asc('objectCode')->limit($searchInfo->pageSize)->find_many();
 }
 
 

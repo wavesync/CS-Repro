@@ -7,7 +7,9 @@
 	$isShowTableHeader = false;	
 	$searchInfo = getBukken(null);	
 	$searchInfo->memberFlg = '02';
-	
+	$searchInfo->pageIndex = 1;
+	$searchInfo->pageSize = 20;	
+	$countItem = 0;
 	
 	if($_SERVER["REQUEST_METHOD"] == "GET")
 	{
@@ -23,8 +25,15 @@
 			$searchInfo->priceFrom = $arr[6];
 			$searchInfo->priceTo = $arr[7];
 			$searchInfo->madori = $arr[8];
+			$searchInfo->pageSize = $arr[9];
+			if(!isset($searchInfo->pageSize) || $searchInfo->pageSize == ''){
+				$searchInfo->pageSize = 20;
+			}
+			if(isset($_GET['p'])){
+				$searchInfo->pageIndex = $_GET['p'];
+			}
 			
-			$objectList = searchBukken($searchInfo);	
+			$objectList = searchBukken($searchInfo, $countItem);	
 			$isShowTableHeader = true;		
 		}		
 	} 
@@ -58,10 +67,13 @@
 		else{
 			$searchInfo->madori = null;
 		}
+		$searchInfo->pageSize = $_POST['pageSize'];
+		$searchInfo->pageIndex = 1;
 		
 		$_SESSION['searchObject'] = array($_POST['memberFlg'], $_POST['objectName'], $_POST['publishFlg'], $searchInfo->address, 
-				$searchInfo->senyuAreaFrom, $searchInfo->senyuAreaTo, $searchInfo->priceFrom, $searchInfo->priceTo, $searchInfo->madori);	
-		$objectList = searchBukken($searchInfo);
+				$searchInfo->senyuAreaFrom, $searchInfo->senyuAreaTo, $searchInfo->priceFrom, $searchInfo->priceTo, $searchInfo->madori, $searchInfo->pageSize);
+		
+		$objectList = searchBukken($searchInfo, $countItem);
 	}
 	function CleanNumber($num)
 	{
@@ -74,9 +86,7 @@
 		{
 			return '';
 		}
-	}
-	
-	
+	}	
 ?>
 <div id="hd2">
 	<h1>		
@@ -168,12 +178,13 @@
 	
 </table> 
 <br>
+<input type="hidden" name="pageSize" id="hidPageSize" value="<?php echo $pageSize?>">
 </form>
 
 <div align="center">
 	<a href='bukkendetail.php'>
 		<img src="images/global/demobtn_register.gif" alt="新規登録" border="0" id="imgRegister"></a>
-	<a href="#" onclick="document.forms['frm'].submit();" >
+	<a href="#" onclick="submit();" >
 		<img src="images/global/demobtn_search.gif" alt="検索" border="0"></a>
 	<a href="#">
 		<img src="images/global/demobtn_clear.gif" alt="クリア" border="0" onclick="ClearCon()" ></a>
@@ -183,7 +194,67 @@
 
 <br>
 <?php if(isset($objectList)){?>
-<div class="pager">全<font color="red"><?php echo sizeof($objectList)?></font>件中：1-<?php echo sizeof($members)?>件目</div>
+<div class="pagesize">
+ページ行数
+	<select id="pageSize" onchange="submit()">
+		<option value="20">&nbsp;20件</option>
+		<option value="30">&nbsp;30件</option>
+		<option value="40">&nbsp;40件</option>
+		<option value="50">&nbsp;50件</option>
+		<option value="100">&nbsp;100件</option>
+	</select>
+	<script>
+		$('#pageSize').val(<?php echo $searchInfo->pageSize?>);		
+	</script>
+	
+	<?php 
+	/*ページング*/
+	$start = $searchInfo->pageSize*($searchInfo->pageIndex - 1);
+	$showPage = 5; //ページャー数表示
+	$max_pages = ceil ( $countItem / $searchInfo->pageSize ); // ページ数
+	
+	//ページ数は1以上
+	if($max_pages > 1){
+		$eitherside = ($showPage * $searchInfo->pageSize);
+		
+		//前
+		print('&nbsp;&nbsp;');
+		if($searchInfo->pageIndex > 1){
+			$previous = $searchInfo->pageIndex - 1;
+			print('<a href="bukkenlist.php?p='.$previous.'">&nbsp;<<&nbsp;</a>');
+		}
+		
+		if ($start + 1 > $eitherside) print (" .... ") ;	
+		$pageIndex = 1;
+		for($y = 0; $y < $countItem; $y += $searchInfo->pageSize) {
+			$class = ($y == $start) ? "pageselected" : "";
+			if (($y > ($start - $eitherside)) && ($y < ($start + $eitherside))) {
+				?>
+					&nbsp;<a class="<?php print($class);?>" href="<?php print("bukkenlist.php".($pageIndex>0?("?p=").$pageIndex:""));?>"><?php print($pageIndex);?></a>&nbsp; 
+				<?php
+		    }
+		    $pageIndex++;
+		}
+		if (($start + $eitherside) < $countItem) print (" .... ") ;
+		
+		if($searchInfo->pageIndex < $max_pages){
+			$next = $searchInfo->pageIndex + 1;
+			print('<a href="bukkenlist.php?p='.$next.'">&nbsp;>>&nbsp;</a>');
+		}
+	}
+	
+	?>
+	
+</div>
+<div class="pager">全<font color="red"><?php echo $countItem?></font>
+<?php	
+	$begin = $searchInfo->pageSize*($searchInfo->pageIndex - 1) + 1;
+	$end = $begin - 1 + $searchInfo->pageSize;
+	if($end > $countItem) $end = $countItem;
+	echo '件中：'.$begin.'-'.$end.'件目';
+?>
+
+</div>
 <table  cellspacing="1" cellpadding="0" class="listTbl">
 	<tr>
 		<td colspan="9" id="tableHeader">登録情報検索結果</td>
@@ -247,6 +318,11 @@
 <?php include 'footer.php'; ?>	
 
 <script language="javascript">
+
+function submit(){
+	$('#hidPageSize').val($('#pageSize').val());
+	document.forms['frm'].submit();
+}
 function DeleteItem(pid)
 {
 	if(confirm('削除しますか？'))
