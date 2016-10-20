@@ -15,17 +15,21 @@
 	{
 		if(isset($_SESSION['searchObject']))
 		{			
-			$arr = $_SESSION['searchObject'];			
-			$searchInfo->memberFlg = $arr[0];
-			$searchInfo->objectName = $arr[1];	
-			$searchInfo->publishFlg = $arr[2];
-			$searchInfo->address = $arr[3];
-			$searchInfo->senyuAreaFrom = $arr[4];
-			$searchInfo->senyuAreaTo = $arr[5];
-			$searchInfo->priceFrom = $arr[6];
-			$searchInfo->priceTo = $arr[7];
-			$searchInfo->madori = $arr[8];
-			$searchInfo->pageSize = $arr[9];
+// 			$arr = $_SESSION['searchObject'];			
+// 			$searchInfo->memberFlg = $arr[0];			
+// 			$searchInfo->objectName = $arr[1];	
+// 			$searchInfo->objectCode = $arr[10];
+// 			$searchInfo->publishFlg = $arr[2];
+// 			$searchInfo->address = $arr[3];
+// 			$searchInfo->senyuAreaFrom = $arr[4];
+// 			$searchInfo->senyuAreaTo = $arr[5];
+// 			$searchInfo->priceFrom = $arr[6];
+// 			$searchInfo->priceTo = $arr[7];
+// 			$searchInfo->madori = $arr[8];
+// 			$searchInfo->pageSize = $arr[9];
+
+			$searchInfo = unserialize($_SESSION['searchObject']);
+			
 			if(!isset($searchInfo->pageSize) || $searchInfo->pageSize == ''){
 				$searchInfo->pageSize = 20;
 			}
@@ -49,6 +53,7 @@
 		#削除
 		$searchInfo->memberFlg = $_POST['memberFlg'];
 		$searchInfo->objectName = $_POST['objectName'];
+		$searchInfo->objectCode = $_POST['objectCode'];
 		$searchInfo->publishFlg = $_POST['publishFlg'];		
 		if(isset($_POST['address'])){
 			$searchInfo->address = implode(',', $_POST['address']);
@@ -70,8 +75,11 @@
 		$searchInfo->pageSize = $_POST['pageSize'];
 		$searchInfo->pageIndex = 1;
 		
-		$_SESSION['searchObject'] = array($_POST['memberFlg'], $_POST['objectName'], $_POST['publishFlg'], $searchInfo->address, 
-				$searchInfo->senyuAreaFrom, $searchInfo->senyuAreaTo, $searchInfo->priceFrom, $searchInfo->priceTo, $searchInfo->madori, $searchInfo->pageSize);
+// 		$_SESSION['searchObject'] = array($_POST['memberFlg'], $_POST['objectName'], $_POST['publishFlg'], $searchInfo->address, 
+// 				$searchInfo->senyuAreaFrom, $searchInfo->senyuAreaTo, $searchInfo->priceFrom, $searchInfo->priceTo, $searchInfo->madori, 
+// 				$searchInfo->pageSize, $searchInfo->objectCode);
+		
+		$_SESSION['searchObject'] = serialize($searchInfo);
 		
 		$objectList = searchBukken($searchInfo, $countItem);
 	}
@@ -147,9 +155,13 @@
 		</td> 
 	</tr>
 	<tr>
+		<th>建物コード</th>
+		<td>
+			<input type="text" name="objectCode" id="objectCode" size="20" style="ime-mode:active" value="<?php echo $searchInfo->objectCode ?>" /> 
+		</td>
 		<th>建物名</th>
-		<td colspan="3">
-			<input type="text" name="objectName" id="objectName" size="50" style="ime-mode:active" value="<?php echo $searchInfo->objectName ?>" /> 
+		<td>
+			<input type="text" name="objectName" id="objectName" size="40" style="ime-mode:active" value="<?php echo $searchInfo->objectName ?>" /> 
 		</td>
 	</tr>
 	<tr>

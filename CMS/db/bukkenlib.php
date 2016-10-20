@@ -27,6 +27,7 @@ function searchBukken($searchInfo, &$countItem){
 	
 	if(!isNull($searchInfo->memberFlg)) $where .= " AND memberFlg = '$searchInfo->memberFlg' ";
 	if(!isNull($searchInfo->publishFlg)) $where .= " AND publishFlg = '$searchInfo->publishFlg' ";
+	if(!isNull($searchInfo->objectCode)) $where .= " AND objectCode = '$searchInfo->objectCode' ";
 	if(!isNull($searchInfo->objectName)) $where .= " AND objectName LIKE '%$searchInfo->objectName%' ";
 
 	if(!isNull($searchInfo->address)){
