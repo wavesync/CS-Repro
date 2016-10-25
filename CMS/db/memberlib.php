@@ -43,15 +43,14 @@ function saveMember($member){
  * @param unknown $searchInfo
  * @return IdiormResultSet
  */
-function searchMember($searchInfo){
-	$query = ORM::for_table('MemberInfo')
-				->table_alias('mb')
-				->distinct()->select('mb.pid,mb.memberNo, mb.memberName, mb.tel,mb.email')
-				->join('HopeInfo', 'mb.pid = hope.memberInfoPid', 'hope');
-
-	if(!isNull($searchInfo->memberNo)) $query = $query->where('memberNo', $searchInfo->memberNo);
-	if(!isNull($searchInfo->memberName)) $query = $query->where_like('memberName', '%'.$searchInfo->memberName.'%');
-	if(!isNull($searchInfo->tel)) $query = $query->where_like('tel', '%'.$searchInfo->tel.'%');
+function searchMember($searchInfo, &$countItem){
+	
+	$where = ' WHERE 1 = 1 ';
+	
+	if(!isNull($searchInfo->memberNo)) $where .= " AND mb.memberNo = '$searchInfo->memberNo'";
+	if(!isNull($searchInfo->memberName)) $where .= " AND mb.memberName LIKE '%$searchInfo->memberName%'";
+	if(!isNull($searchInfo->tel)) $where .= " AND mb.tel LIKE '%$searchInfo->tel%'";
+	
 	if(!isNull($searchInfo->hopeArea)){
 		$areas = explode(',', $searchInfo->hopeArea);
 		$con = array();
@@ -59,16 +58,69 @@ function searchMember($searchInfo){
 			$con[] = "hope.hopeArea like '%".$area."%'";
 		}
 		$whereArea = '('.implode(' OR ', $con).')';
-		$query = $query->where_raw($whereArea);
+		$where .= ' AND '.$whereArea;
 	}
 	
-	if(!isNull($searchInfo->hopePriceFrom)) $query = $query->where_gte('hope.hopePriceFrom', $searchInfo->hopePriceFrom);
-	if(!isNull($searchInfo->hopePriceTo)) $query = $query->where_raw('(hope.hopePriceTo IS NULL OR hope.hopePriceTo = 0 OR hope.hopePriceTo >= ?)', array($searchInfo->hopePriceTo));
 	
-	if(!isNull($searchInfo->hopeSquareFrom)) $query = $query->where_gte('hope.hopeSquareFrom', $searchInfo->hopeSquareFrom);
-	if(!isNull($searchInfo->hopeSquareTo)) $query = $query->where_raw('(hope.hopeSquareTo IS NULL OR hope.hopeSquareTo = 0 OR hope.hopeSquareTo >= ?)', array($searchInfo->hopeSquareTo));
+	if(!isNull($searchInfo->hopePriceFrom)) $where .= ' AND hope.hopePriceFrom >= '.$searchInfo->hopePriceFrom;
+	if(!isNull($searchInfo->hopePriceTo)) $where .= ' AND (hope.hopePriceTo IS NULL OR hope.hopePriceTo = 0 OR hope.hopePriceTo >= '.$searchInfo->hopePriceTo.')';
 	
-	if($searchInfo->hopeYear > 0) $query = $query->where_lte('hope.hopeYear', $searchInfo->hopeYear);
+	if(!isNull($searchInfo->hopeSquareFrom)) $where .= ' AND hope.hopeSquareFrom >= '.$searchInfo->hopeSquareFrom;
+	if(!isNull($searchInfo->hopeSquareTo)) $where .= ' AND (hope.hopeSquareTo IS NULL OR hope.hopeSquareTo = 0 OR hope.hopeSquareTo >= '.$searchInfo->hopeSquareTo.')';
+	
+	if($searchInfo->hopeYear > 0) $where .= ' AND hope.hopeYear <= '.$searchInfo->hopeYear;
+	
+	$from = ' FROM MemberInfo mb LEFT JOIN HopeInfo hope ON mb.pid = hope.memberInfoPid';
+	
+	$countQuery = 'SELECT COUNT(DISTINCT mb.pid) as pid '.$from.$where;
+
+	$count = ORM::for_table('MemberInfo')->raw_query($countQuery)->find_one();
+	$countItem = $count->pid;
+	
+
+	if(!isset($searchInfo->sortField) || $searchInfo->sortField == '') $searchInfo->sortField = 'memberNo';
+	if(!isset($searchInfo->sortOrder) || $searchInfo->sortOrder == '') $searchInfo->sortOrder = 'ASC';
+	
+	$order = 'ORDER BY '.$searchInfo->sortField.' '.$searchInfo->sortOrder;
+	$distinct = 'SELECT DISTINCT mb.pid,mb.memberNo, mb.memberName, mb.tel,mb.email';
+	$select = 'SELECT ROW_NUMBER() OVER('.$order.') rowNum, * FROM ('.$distinct.$from.$where.') t';
+	
+	$start = $searchInfo->pageSize*($searchInfo->pageIndex - 1) + 1;
+	$end = $start + $searchInfo->pageSize - 1;
+	
+	$select = 'SELECT pid, memberNo, memberName, tel, email
+			   FROM ('.$select.') t WHERE rowNum BETWEEN '.$start.' AND '.$end;
+	
+	
+	return ORM::for_table('MemberInfo')->raw_query($select)->find_many();
+
+	//--------------------------
+	
+// 	$query = ORM::for_table('MemberInfo')
+// 				->table_alias('mb')
+// 				->distinct()->select('mb.pid,mb.memberNo, mb.memberName, mb.tel,mb.email')
+// 				->join('HopeInfo', 'mb.pid = hope.memberInfoPid', 'hope');
+
+// 	if(!isNull($searchInfo->memberNo)) $query = $query->where('memberNo', $searchInfo->memberNo);
+// 	if(!isNull($searchInfo->memberName)) $query = $query->where_like('memberName', '%'.$searchInfo->memberName.'%');
+// 	if(!isNull($searchInfo->tel)) $query = $query->where_like('tel', '%'.$searchInfo->tel.'%');
+// 	if(!isNull($searchInfo->hopeArea)){
+// 		$areas = explode(',', $searchInfo->hopeArea);
+// 		$con = array();
+// 		foreach($areas as $area){
+// 			$con[] = "hope.hopeArea like '%".$area."%'";
+// 		}
+// 		$whereArea = '('.implode(' OR ', $con).')';
+// 		$query = $query->where_raw($whereArea);
+// 	}
+	
+// 	if(!isNull($searchInfo->hopePriceFrom)) $query = $query->where_gte('hope.hopePriceFrom', $searchInfo->hopePriceFrom);
+// 	if(!isNull($searchInfo->hopePriceTo)) $query = $query->where_raw('(hope.hopePriceTo IS NULL OR hope.hopePriceTo = 0 OR hope.hopePriceTo >= ?)', array($searchInfo->hopePriceTo));
+	
+// 	if(!isNull($searchInfo->hopeSquareFrom)) $query = $query->where_gte('hope.hopeSquareFrom', $searchInfo->hopeSquareFrom);
+// 	if(!isNull($searchInfo->hopeSquareTo)) $query = $query->where_raw('(hope.hopeSquareTo IS NULL OR hope.hopeSquareTo = 0 OR hope.hopeSquareTo >= ?)', array($searchInfo->hopeSquareTo));
+	
+// 	if($searchInfo->hopeYear > 0) $query = $query->where_lte('hope.hopeYear', $searchInfo->hopeYear);
 	
 	return $query->find_many();
 }

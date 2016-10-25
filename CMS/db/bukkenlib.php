@@ -68,18 +68,19 @@ function searchBukken($searchInfo, &$countItem){
 	$countItem = $count->pid;
 	
 	if(!isset($searchInfo->sortField) || $searchInfo->sortField == '') $searchInfo->sortField = 'objectCode';
-	if(!isset($searchInfo->sortOrder) || $searchInfo->sortOrder == '') $searchInfo->sortOrder = 'ASC';
+	if(!isset($searchInfo->sortOrder) || $searchInfo->sortOrder == '') $searchInfo->sortOrder = 'asc';
 	
 	$order = 'ORDER BY '.$searchInfo->sortField.' '.$searchInfo->sortOrder;
 	$select = 'SELECT ROW_NUMBER() OVER('.$order.') rowNum, * FROM Bukken '.$where;
 
 	$start = $searchInfo->pageSize*($searchInfo->pageIndex - 1) + 1;
-	$end = $start + $searchInfo->pageSize;
+	$end = $start + $searchInfo->pageSize - 1;
 	
-	$select = 'SELECT pid, objectCode, objectName, objectCodeReins, route1Name 
+	$select = 'SELECT pid, objectCode, objectName, objectCodeReins, route1Name, 
 					  station1Name, address, madori, syozaiKai, senyuArea, price		
 			   FROM ('.$select.') t WHERE rowNum BETWEEN '.$start.' AND '.$end;
 
+	
 	return ORM::for_table('Bukken')->raw_query($select)->find_many();
 	//検索
 	

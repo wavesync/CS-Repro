@@ -760,6 +760,14 @@ table.listTbl{
     border-collapse: collapse;
 }
 
+table.listTbl .odd, .even{
+	height:40px;
+}
+
+.odd{
+	background-color:#dfe7f2;
+}
+
 .tabbox table.listTbl{
 	width: 738px;
 	margin: 0px;
@@ -1273,4 +1281,39 @@ table.tablesorter thead .sorter-false {
 }
 table.tablesorter thead tr .tablesorter-headerDesc, table.tablesorter thead tr .tablesorter-headerAsc {
 background-color: #dae0e4;
+}
+
+/*ÇÃÉ\Å[Ég*/
+.sorter-header {
+	background-image: url(../images/global/bg.gif) !important;
+	background-repeat: no-repeat !important;
+	background-position: center right !important;
+	cursor: pointer !important;
+	text-align: center; 
+	font-weight: normal;
+}
+.sorter-headerAsc {
+	background-color: #dae0e4 !important;
+	background-image: url(../images/global/asc.gif) !important;
+	background-repeat: no-repeat !important;
+	background-position: center right !important;
+	cursor: pointer !important;
+	text-align: center; 
+	font-weight: normal;
+}
+.sorter-headerDesc {
+	background-color: #dae0e4 !important;
+	background-image: url(../images/global/desc.gif) !important;
+	background-repeat: no-repeat !important;
+	background-position: center right !important;
+	cursor: pointer !important;
+	text-align: center; 
+	font-weight: normal;
+}
+.sorter-noSort{
+	background-image: none !important;
+    background-repeat: no-repeat !important;
+    background-position: center right !important;
+    text-align: center; 
+	font-weight: normal;
 }

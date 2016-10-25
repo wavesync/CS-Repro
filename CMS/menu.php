@@ -9,7 +9,10 @@
 	</head>
 	<body>
 	
-	<?php include('lock.php');?>
+	<?php include('lock.php');
+	unset($_SESSION['searchMember']);
+	unset($_SESSION['searchObject']);
+	?>
 	
 	<div id="topLine"></div>
 	<div id="secondLine"></div>

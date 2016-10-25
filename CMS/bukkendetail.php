@@ -15,7 +15,7 @@
 			$bukken = getBukken($_GET['pid']);
 		}
 		else {
-			$bukken = getBukken();
+			$bukken = getBukken(null);
 			$bukken->publishFlg = '00';
 		}
 	}	

@@ -5,29 +5,18 @@
 <?php
 
 	$isShowTableHeader = false;	
-	$searchInfo = getBukken(null);	
+	$searchInfo = getBukken(null);
+	
 	$searchInfo->memberFlg = '02';
 	$searchInfo->pageIndex = 1;
 	$searchInfo->pageSize = 20;	
+	$searchInfo->scrollTop = 0;
 	$countItem = 0;
 	
 	if($_SERVER["REQUEST_METHOD"] == "GET")
 	{
 		if(isset($_SESSION['searchObject']))
 		{			
-// 			$arr = $_SESSION['searchObject'];			
-// 			$searchInfo->memberFlg = $arr[0];			
-// 			$searchInfo->objectName = $arr[1];	
-// 			$searchInfo->objectCode = $arr[10];
-// 			$searchInfo->publishFlg = $arr[2];
-// 			$searchInfo->address = $arr[3];
-// 			$searchInfo->senyuAreaFrom = $arr[4];
-// 			$searchInfo->senyuAreaTo = $arr[5];
-// 			$searchInfo->priceFrom = $arr[6];
-// 			$searchInfo->priceTo = $arr[7];
-// 			$searchInfo->madori = $arr[8];
-// 			$searchInfo->pageSize = $arr[9];
-
 			$searchInfo = unserialize($_SESSION['searchObject']);
 			
 			if(!isset($searchInfo->pageSize) || $searchInfo->pageSize == ''){
@@ -73,11 +62,13 @@
 			$searchInfo->madori = null;
 		}
 		$searchInfo->pageSize = $_POST['pageSize'];
+		if(!isset($searchInfo->pageSize) || $searchInfo->pageSize == '' || $searchInfo->pageSize == 0){
+			$searchInfo->pageSize = 20;
+		}
 		$searchInfo->pageIndex = 1;
-		
-// 		$_SESSION['searchObject'] = array($_POST['memberFlg'], $_POST['objectName'], $_POST['publishFlg'], $searchInfo->address, 
-// 				$searchInfo->senyuAreaFrom, $searchInfo->senyuAreaTo, $searchInfo->priceFrom, $searchInfo->priceTo, $searchInfo->madori, 
-// 				$searchInfo->pageSize, $searchInfo->objectCode);
+		$searchInfo->sortField = $_POST['sortField'];
+		$searchInfo->sortOrder = $_POST['sortOrder'];
+		$searchInfo->scrollTop = $_POST['scrollTop'];
 		
 		$_SESSION['searchObject'] = serialize($searchInfo);
 		
@@ -95,6 +86,18 @@
 			return '';
 		}
 	}	
+	
+	function showSortClass($field, $searchInfo){
+		$class = 'sorter-header';
+		if($searchInfo->sortField == $field){
+			$class = 'sorter-headerAsc';
+			if($searchInfo->sortOrder == 'desc'){
+				$class = 'sorter-headerDesc';
+			}
+		}
+		echo 'class="'.$class.'"';
+	}
+	
 ?>
 <div id="hd2">
 	<h1>		
@@ -190,7 +193,10 @@
 	
 </table> 
 <br>
-<input type="hidden" name="pageSize" id="hidPageSize" value="<?php echo $pageSize?>">
+<input type="hidden" name="pageSize" id="hidPageSize" value="<?php echo $searchInfo->pageSize?>">
+<input type="hidden" name="sortField" id="sortField" value="<?php echo $searchInfo->sortField?>">
+<input type="hidden" name="sortOrder" id="sortOrder" value="<?php echo $searchInfo->sortOrder?>">
+<input type="hidden" name="scrollTop" id="scrollTop" value="<?php echo $searchInfo->scrollTop?>">
 </form>
 
 <div align="center">
@@ -272,31 +278,34 @@
 		<td colspan="9" id="tableHeader">登録情報検索結果</td>
 	</tr>
 </table>
-<table class="listTbl tablesorter" id="tablesorter">
-
+<table class="listTbl" id="tablesorter">
 	<thead>
 	<tr>
-		<th class="textcenter" style="width:56px !important">
-		詳細・<br/>削除
-		</th>
-		<th class="textcenter" style="width:80px !important">建物番号</th>		
-		<th class="textcenter" style="width:120px !important">レインズ物件番号</th>
-		<th class="textcenter">建物名</th>
-		<th class="textcenter" >路線<br>駅</th>
-		<th class="textcenter" >所在地</th>
-		<th class="textcenter" style="width:50px !important" >間取<br>階数</th>
-		<th class="textcenter" style="width:80px !important" >専有面積</th>
-		<th class="textcenter" >価格</th>				
+		<th class="sorter-noSort" style="width:56px !important">詳細</th>
+		<th <?php showSortClass('objectCode', $searchInfo)?> style="width:80px !important" onclick="sort(this, 'objectCode')">建物番号</th>		
+		<th <?php showSortClass('objectCodeReins', $searchInfo)?> style="width:120px !important" onclick="sort(this, 'objectCodeReins')">レインズ物件番号</th>
+		<th class="sorter-noSort">建物名</th>
+		<th class="sorter-noSort" >路線<br>駅</th>
+		<th class="sorter-noSort" >所在地</th>
+		<th class="sorter-noSort" style="width:50px !important">間取<br>階数</th>
+		<th <?php showSortClass('senyuArea', $searchInfo)?> style="width:80px !important" onclick="sort(this, 'senyuArea')">専有面積</th>
+		<th <?php showSortClass('price', $searchInfo)?>  onclick="sort(this, 'price')">価格</th>				
 	</tr>
 	</thead>
 	<tbody>
-	<?php foreach($objectList as $bukken){ ?>
-		<tr>
+	<?php
+		$index = -1;
+		foreach($objectList as $bukken){
+			$index++;
+			$class = 'odd';
+			if($index % 2 > 0) $class = 'even';
+	?>
+		<tr <?php echo 'class="'.$class.'"'?>>
 			<td style="width:56px !important">
 				<a style="width:55px" href="bukkendetail.php?pid=<?php echo $bukken->pid ?>">
 					<img src="images/global/demobtn_s_renewal.gif" alt="詳細" border="0" >
 				</a>
-				<a style="width:55px" href="#" onclick="javascript:DeleteItem(<?php echo $bukken->pid?>);"  >
+				<a style="width:55px;display:none" href="#" onclick="javascript:DeleteItem(<?php echo $bukken->pid?>);"  >
 					<img src="images/global/demobtn_s_delete.gif" alt="削除" border="0" />
 				</a>
 			</td>
@@ -333,21 +342,19 @@
 
 function submit(){
 	$('#hidPageSize').val($('#pageSize').val());
+	$('#scrollTop').val($(window).scrollTop());
 	document.forms['frm'].submit();
 }
-function DeleteItem(pid)
-{
-	if(confirm('削除しますか？'))
-	{
-		document.getElementById('hidAct').value = 'delete';
-		document.getElementById('hidPid').value = pid;
-		document.forms['frm'].submit();
-	}
-	else
-	{
-		document.getElementById('hidAct').value = '';
-	}
+
+function sort(obj, col){
+	order = 'asc';
+	if(obj.className == 'sorter-headerAsc') order = 'desc';
+	$('#sortField').val(col);
+	$('#sortOrder').val(order);
+	$('#scrollTop').val($(window).scrollTop());
+	document.forms['frm'].submit();
 }
+
 function ClearCon()
 {
 	//$('#objectName').val('');
@@ -373,10 +380,12 @@ function ClearCon()
 /**/
 function scrollSearchDiv(){
 	if($('#searchDiv').is(':visible')){
-		$('#imgSwitch').attr('src', 'images/global/north-mini.png');
+		$('#imgSwitch').attr('src', 'images/global/north-mini.png');	
+		localStorage.setItem('bkSearchShow', 0);	
 	}		
 	else {
 		$('#imgSwitch').attr('src', 'images/global/south-mini.png');
+		localStorage.setItem('bkSearchShow', 1);		
 	}
 	$('#searchDiv').slideToggle("slow");
 }
@@ -388,7 +397,15 @@ function scrollSearchDiv(){
 
 <script type="text/javascript">
 	$(document).ready(function(){
-		$("#tablesorter").tablesorter({headers: {0:{sorter:false},1:{sorter:true},2:{sorter:true},3:{sorter:true},4:{sorter:false},5:{sorter:false},6:{sorter:false},7:{sorter:'digit'},8:{sorter:'digit'}}, sortList:[[1,0]], widgets: ['zebra']});
+		//$("#tablesorter").tablesorter({headers: {0:{sorter:false},1:{sorter:true},2:{sorter:true},3:{sorter:true},4:{sorter:false},5:{sorter:false},6:{sorter:false},7:{sorter:'digit'},8:{sorter:'digit'}}, sortList:[[1,0]], widgets: ['zebra']});
+		//$(window).scrollTop(<?php echo $searchInfo->scrollTop?>);
+		$("html, body").animate({ scrollTop: "<?php echo $searchInfo->scrollTop?>px" }, 300);
+		if(localStorage.getItem('bkSearchShow') == 0){
+			$('#searchDiv').hide();
+		}
+		else {
+			$('#searchDiv').show();
+		}
 	});
 		
 </script>
